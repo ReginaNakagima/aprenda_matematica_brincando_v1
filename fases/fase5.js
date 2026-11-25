@@ -27,11 +27,48 @@ window.Fases[5] = {
 
   iniciar() {
     this.indiceDesafio = 0;
-    Jogo.definirInstrucao(
-      'Bem-vindo à Soma Divertida! Somar é juntar coisas! O sinal de mais junta, e o de igual mostra o resultado!',
-      true,
-      () => this.apresentarExemplo(0)
-    );
+    const areaJogo = document.getElementById('area-jogo');
+
+    // Prepara o palco visual dos sinais (começam invisíveis e aparecem quando são falados)
+    areaJogo.innerHTML = `
+      <div class="palco-soma" style="gap: 35px; padding: 30px 45px;">
+        <div id="intro-sinal-mais" class="grupo-fruta" style="opacity: 0; transition: opacity 0.3s;">
+          <span class="sinal-matematico" style="font-size: 5rem;">+</span>
+          <span class="sub-num">MAIS</span>
+        </div>
+        <div id="intro-sinal-igual" class="grupo-fruta" style="opacity: 0; transition: opacity 0.3s;">
+          <span class="sinal-matematico" style="font-size: 5rem;">=</span>
+          <span class="sub-num">IGUAL</span>
+        </div>
+      </div>
+    `;
+
+    Jogo.instrucaoAtual = 'Bem-vindo à Soma Divertida! Somar é juntar coisas! O sinal de mais junta, e o de igual mostra o resultado!';
+
+    Jogo.falar('Bem-vindo à Soma Divertida! Somar é juntar coisas!', () => {
+      if (Jogo.faseAtual !== 5) return;
+      const elMais = document.getElementById('intro-sinal-mais');
+      if (elMais) {
+        elMais.style.opacity = '1';
+        elMais.classList.add('pulsar-destaque');
+      }
+
+      Jogo.falar('O sinal de mais junta,', () => {
+        if (Jogo.faseAtual !== 5) return;
+        if (elMais) elMais.classList.remove('pulsar-destaque');
+
+        const elIgual = document.getElementById('intro-sinal-igual');
+        if (elIgual) {
+          elIgual.style.opacity = '1';
+          elIgual.classList.add('pulsar-destaque');
+        }
+
+        Jogo.falar('e o de igual mostra o resultado!', () => {
+          if (Jogo.faseAtual !== 5) return;
+          setTimeout(() => this.apresentarExemplo(0), 350);
+        });
+      });
+    });
   },
 
   apresentarExemplo(index) {
@@ -115,8 +152,9 @@ window.Fases[5] = {
     areaJogo.classList.remove('bloqueado');
 
     const d = this.desafios[this.indiceDesafio];
+    // Corrigido: aponta para window.Fases[5].verificar
     const opcoesHTML = d.opcoes.map(op => `
-      <button class="btn-opcao-num" onclick="window.Fases[4].verificar(${op}, this)">${op}</button>
+      <button class="btn-opcao-num" onclick="window.Fases[5].verificar(${op}, this)">${op}</button>
     `).join('');
 
     areaJogo.innerHTML = `
