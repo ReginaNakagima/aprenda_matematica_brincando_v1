@@ -1,0 +1,11 @@
+
+aprenda_matematica_brincando_v1/
+├── index.html
+├── style.css
+├── main.js          (Controla apenas o Mapa, a Voz e o Progresso)
+└── fases/
+    ├── fase1.js     (Formas e Cores)
+    ├── fase2.js     (Muito e Pouco)
+    ├── fase3.js     (Contagem 0 a 10 e Ligar)
+    ├── fase4.js     (Dezenas, Centenas e Milhar)
+    └── fase5.js     (Próxima fase que você criar!)

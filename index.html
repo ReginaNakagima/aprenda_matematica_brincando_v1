@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aprenda Matemática Brincando</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- BOTÕES DE CONTROLE FIXOS NO TOPO -->
+  <header id="topo">
+    <div class="topo-esquerda">
+      <button id="btn-mapa" onclick="voltarParaMapa()" class="oculto" aria-label="Voltar ao mapa">🗺️</button>
+      <button id="btn-reset" onclick="reiniciarProgresso()" title="Reiniciar progresso" aria-label="Reiniciar progresso">🔄</button>
+    </div>
+    <button id="btn-ouvir" onclick="repetirFala()" aria-label="Ouvir novamente">🔊</button>
+  </header>
+
+  <!-- TELA 1: MAPA DE FLORESTA COM TRILHA PAGINADA -->
+  <section id="tela-mapa">
+    <div class="titulo-jogo">
+      <span class="linha-1">APRENDA</span>
+      <span class="linha-2">MATEMÁTICA</span>
+      <span class="linha-3">BRINCANDO</span>
+    </div>
+
+    <svg class="cenario-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+      <rect width="1200" height="700" fill="#B3E5FC"/>
+      <polygon points="150,420 450,180 750,420" fill="#81C784"/>
+      <polygon points="500,420 820,200 1150,420" fill="#66BB6A"/>
+      <path d="M0,360 Q600,320 1200,360 L1200,700 L0,700 Z" fill="#8BC34A"/>
+      <path d="M0,440 Q600,400 1200,450 L1200,700 L0,700 Z" fill="#7CB342"/>
+
+      <rect x="70" y="180" width="45" height="260" fill="#6D4C41"/>
+      <circle cx="92" cy="170" r="95" fill="#388E3C"/>
+      <circle cx="40" cy="210" r="65" fill="#43A047"/>
+      <circle cx="145" cy="210" r="65" fill="#2E7D32"/>
+
+      <rect x="1080" y="190" width="45" height="270" fill="#6D4C41"/>
+      <circle cx="1102" cy="180" r="95" fill="#388E3C"/>
+      <circle cx="1050" cy="220" r="65" fill="#43A047"/>
+      <circle cx="1155" cy="220" r="65" fill="#2E7D32"/>
+
+      <!-- Trilha de terra passando pelos 5 pontos -->
+      <path d="M -20,620 C 220,520 350,640 560,550 C 760,460 880,620 1220,520" 
+            fill="none" stroke="#C59B6D" stroke-width="95" stroke-linecap="round"/>
+      <path d="M -20,620 C 220,520 350,640 560,550 C 760,460 880,620 1220,520" 
+            fill="none" stroke="#E6C29F" stroke-width="75" stroke-linecap="round"/>
+    </svg>
+
+    <!-- SETAS DE NAVEGAÇÃO ENTRE TELAS DO MAPA (< e >) -->
+    <button id="btn-pag-anterior" class="btn-navegacao-mapa esq oculto" onclick="mudarPaginaMapa(-1)" aria-label="Fases anteriores">❮</button>
+    <button id="btn-pag-proxima" class="btn-navegacao-mapa dir" onclick="mudarPaginaMapa(1)" aria-label="Próximas fases">❯</button>
+
+    <!-- MASCOTE CORUJINHA -->
+    <div id="mascote-mapa" onclick="repetirFala()">🦉</div>
+
+    <!-- CONTAINER ONDE AS 5 PEDRAS DA TELA ATUAL SÃO DESENHADAS -->
+    <div id="container-pedras"></div>
+  </section>
+
+  <!-- TELA 2: ÁREA DAS FASES -->
+  <section id="tela-fase" class="oculto">
+    <div id="mascote-fase" onclick="repetirFala()">🦉</div>
+    <main id="area-jogo"></main>
+  </section>
+
+  <!-- MOTOR PRINCIPAL + MÓDULOS DE FASES -->
+  <script src="main.js"></script>
+  <script src="fases/fase1.js"></script>
+  <script src="fases/fase2.js"></script>
+  <script src="fases/fase3.js"></script>
+  <script src="fases/fase4.js"></script>
+  <script src="fases/fase5.js"></script>
+  <script src="fases/fase6.js"></script>
+  <script src="fases/fase7.js"></script>
+</body>
+</html>
