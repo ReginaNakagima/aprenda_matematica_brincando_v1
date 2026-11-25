@@ -124,7 +124,10 @@ const Jogo = {
   },
 
   falar(texto, aoTerminar = null) {
-    window.speechSynthesis.cancel();
+    // Só cancela se houver realmente algo falando, evitando atraso de reabertura no Android
+    if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+      window.speechSynthesis.cancel();
+    }
     
     // Mantém referência na instância para o navegador mobile não cancelar o evento onend
     this.falaAtual = new SpeechSynthesisUtterance(texto);

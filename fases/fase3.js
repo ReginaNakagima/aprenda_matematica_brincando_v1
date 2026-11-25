@@ -46,11 +46,13 @@ window.Fases[3] = {
 
         Jogo.definirInstrucao(this.conclusoes[0], true, () => {
           if (numEl) numEl.classList.remove('pulsar-destaque');
-          setTimeout(() => this.apresentarNumero(1), 500);
+          setTimeout(() => this.apresentarNumero(1), 250);
         });
       } else {
         Jogo.definirInstrucao(`Vamos contar até ${this.palavras[num]}!`);
-        this.contarUmaAUma(num, 1);
+        // Pré-aquece o canal de áudio do Android antes do "1"
+        if (Jogo.aquecerVoz) Jogo.aquecerVoz();
+        setTimeout(() => this.contarUmaAUma(num, 1), 120);
       }
     } else {
       this.iniciarRodadaLigar();
@@ -72,8 +74,11 @@ window.Fases[3] = {
         cesta.appendChild(itemDiv);
       }
 
-      Jogo.falar(this.palavras[atual], () => {
-        setTimeout(() => this.contarUmaAUma(alvoNum, atual + 1), 180);
+      // O ponto de exclamação evita que o motor TTS do Android engula a sílaba curta "um"
+      const textoFala = atual === 1 ? 'Um!' : `${this.palavras[atual]}!`;
+
+      Jogo.falar(textoFala, () => {
+        setTimeout(() => this.contarUmaAUma(alvoNum, atual + 1), 150);
       });
     } else {
       const numEl = document.getElementById('numero-principal');
@@ -81,7 +86,7 @@ window.Fases[3] = {
 
       Jogo.definirInstrucao(this.conclusoes[alvoNum], true, () => {
         if (numEl) numEl.classList.remove('pulsar-destaque');
-        setTimeout(() => this.apresentarNumero(alvoNum + 1), 500);
+        setTimeout(() => this.apresentarNumero(alvoNum + 1), 300);
       });
     }
   },
