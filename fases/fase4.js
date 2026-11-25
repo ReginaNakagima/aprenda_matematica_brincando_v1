@@ -1,15 +1,16 @@
 window.Fases[4] = {
   desafios: [
-    { numero: 1, aceitos: ['1', 'um', 'uma'], dica: 'Diga bem alto: UM!' },
-    { numero: 3, aceitos: ['3', 'três', 'tres'], dica: 'Que número é este? Diga em voz alta!' },
+    { numero: 1, aceitos: ['1', 'um', 'uma', 'hum'], dica: 'Diga bem alto: UM!' },
+    { numero: 3, aceitos: ['3', 'três', 'tres', 'treis'], dica: 'Que número é este? Diga em voz alta!' },
     { numero: 5, aceitos: ['5', 'cinco'], dica: 'E este número aqui? Fale no microfone!' },
     { numero: 0, aceitos: ['0', 'zero'], dica: 'Este é redondinho! Qual é o nome dele?' },
     { numero: 7, aceitos: ['7', 'sete'], dica: 'Agora fale o nome deste número!' },
-    { numero: 10, aceitos: ['10', 'dez'], dica: 'Para terminar, que número é este?' }
+    { numero: 10, aceitos: ['10', 'dez', 'dés', 'des'], dica: 'Para terminar, que número é este?' }
   ],
   indice: 0,
   reconhecimento: null,
   ouvindoAgora: false,
+  jaAcertouRodada: false,
 
   iniciar() {
     this.indice = 0;
@@ -24,23 +25,15 @@ window.Fases[4] = {
   configurarReconhecimentoVoz() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'pt-BR';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 3;
-
-      // Garante que o áudio de instrução da coruja parou antes de abrir o microfone
-      window.speechSynthesis.cancel();
-      recognition.start();
-    } else {
-      alert("Este navegador não suporta reconhecimento de voz. Use o botão de confirmação abaixo.");
+    if (!SpeechRecognition) {
+      this.reconhecimento = null;
+      return;
     }
 
     const rec = new SpeechRecognition();
     rec.lang = 'pt-BR';
-    rec.interimResults = false;
-    rec.maxAlternatives = 3;
+    rec.interimResults = true;  // Valida instantaneamente enquanto a criança fala, sem esperar silêncio longo
+    rec.maxAlternatives = 5;    // Verifica as 5 hipóteses mais prováveis do Android
 
     rec.onstart = () => {
       this.ouvindoAgora = true;
@@ -51,16 +44,50 @@ window.Fases[4] = {
     };
 
     rec.onresult = (event) => {
-      this.ouvindoAgora = false;
-      const resultados = Array.from(event.results[0]).map(r => r.transcript.toLowerCase().trim());
-      this.validarFala(resultados);
+      if (Jogo.estado !== 'jogando' || this.jaAcertouRodada) return;
+
+      const transcricoes = [];
+      let ehFinal = false;
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) ehFinal = true;
+        for (let alt = 0; alt < event.results[i].length; alt++) {
+          transcricoes.push(event.results[i][alt].transcript.toLowerCase().trim());
+        }
+      }
+
+      const atual = this.desafios[this.indice];
+      const acertou = transcricoes.some(frase =>
+        atual.aceitos.some(palavra => frase.includes(palavra))
+      );
+
+      if (acertou) {
+        this.jaAcertouRodada = true;
+        this.ouvindoAgora = false;
+        try { rec.stop(); } catch (e) {}
+        this.avancarAcerto();
+      } else if (ehFinal && transcricoes.length > 0) {
+        // Só avisa erro se o usuário terminou de falar uma frase final diferente do número
+        this.ouvindoAgora = false;
+        this.validarFala(transcricoes);
+      }
     };
 
-    rec.onerror = () => {
+    rec.onerror = (event) => {
       this.ouvindoAgora = false;
       const btn = document.getElementById('btn-mic-oral');
-      const status = document.getElementById('status-mic-oral');
       if (btn) btn.classList.remove('ouvindo');
+
+      // Ignora erros causados por parada intencional após acerto ou silêncio inicial
+      if (this.jaAcertouRodada || event.error === 'aborted' || event.error === 'no-speech') {
+        const status = document.getElementById('status-mic-oral');
+        if (status && !this.jaAcertouRodada) {
+          status.textContent = 'Toque no 🎤 e fale o número bem perto!';
+        }
+        return;
+      }
+
+      const status = document.getElementById('status-mic-oral');
       if (status) status.textContent = 'Não consegui ouvir. Toque no microfone e fale de novo!';
       Jogo.falar('Não consegui ouvir direitinho. Toque no microfone e fale bem perto!');
     };
@@ -77,6 +104,7 @@ window.Fases[4] = {
   mostrarDesafio() {
     if (Jogo.faseAtual !== 4) return;
     Jogo.estado = 'jogando';
+    this.jaAcertouRodada = false;
 
     const areaJogo = document.getElementById('area-jogo');
     areaJogo.classList.remove('bloqueado');
@@ -92,13 +120,13 @@ window.Fases[4] = {
     `;
 
     Jogo.definirInstrucao(atual.dica, true, () => {
-      // Ativa a escuta automaticamente logo após a corujinha terminar de perguntar
-      this.escutar();
+      // Ativa a escuta automaticamente 150ms após a corujinha terminar de falar
+      setTimeout(() => this.escutar(), 150);
     });
   },
 
   escutar() {
-    if (Jogo.estado !== 'jogando' || this.ouvindoAgora) return;
+    if (Jogo.estado !== 'jogando' || this.ouvindoAgora || this.jaAcertouRodada) return;
     window.speechSynthesis.cancel();
 
     if (!this.reconhecimento) {
@@ -115,29 +143,22 @@ window.Fases[4] = {
   },
 
   validarFala(transcricoes) {
-    if (Jogo.estado !== 'jogando') return;
+    if (Jogo.estado !== 'jogando' || this.jaAcertouRodada) return;
     const atual = this.desafios[this.indice];
     const status = document.getElementById('status-mic-oral');
 
-    const acertou = transcricoes.some(frase =>
-      atual.aceitos.some(palavra => frase.includes(palavra))
-    );
-
-    if (acertou) {
-      this.avancarAcerto();
-    } else {
-      if (status) status.textContent = `Ouvi "${transcricoes[0]}". Tente falar o número ${atual.numero}!`;
-      const numEl = document.getElementById('num-oral-tela');
-      if (numEl) {
-        numEl.classList.add('erro');
-        setTimeout(() => numEl.classList.remove('erro'), 350);
-      }
-      Jogo.falar('Quase lá! Olhe bem para o número, toque no microfone e fale o nome dele!');
+    if (status) status.textContent = `Ouvi "${transcricoes[0]}". Tente falar o número ${atual.numero}!`;
+    const numEl = document.getElementById('num-oral-tela');
+    if (numEl) {
+      numEl.classList.add('erro');
+      setTimeout(() => numEl.classList.remove('erro'), 350);
     }
+    Jogo.falar('Quase lá! Olhe bem para o número, toque no microfone e fale o nome dele!');
   },
 
   confirmarManual() {
-    if (Jogo.estado !== 'jogando') return;
+    if (Jogo.estado !== 'jogando' || this.jaAcertouRodada) return;
+    this.jaAcertouRodada = true;
     if (this.reconhecimento && this.ouvindoAgora) {
       try { this.reconhecimento.stop(); } catch (e) {}
     }
@@ -156,7 +177,7 @@ window.Fases[4] = {
     this.indice++;
     if (this.indice < this.desafios.length) {
       Jogo.falar(`Isso mesmo! Número ${atual.numero}! Vamos para o próximo!`, () => {
-        setTimeout(() => this.mostrarDesafio(), 500);
+        setTimeout(() => this.mostrarDesafio(), 400);
       });
     } else {
       Jogo.falar('Parabéns! Você falou todos os números direitinho!', () => {

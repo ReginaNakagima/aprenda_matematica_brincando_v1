@@ -123,9 +123,17 @@ const Jogo = {
     }
   },
 
+  aquecerVoz() {
+    if (!('speechSynthesis' in window)) return;
+    const silencio = new SpeechSynthesisUtterance(' ');
+    silencio.volume = 0;
+    silencio.rate = 2;
+    window.speechSynthesis.speak(silencio);
+  },
+
   falar(texto, aoTerminar = null) {
-    // Só cancela se houver realmente algo falando, evitando atraso de reabertura no Android
-    if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+    const precisouCancelar = window.speechSynthesis.speaking || window.speechSynthesis.pending;
+    if (precisouCancelar) {
       window.speechSynthesis.cancel();
     }
     
@@ -148,8 +156,13 @@ const Jogo = {
       if (aoTerminar) aoTerminar();
     };
 
-    // Tempo dinâmico: ~110ms por letra + 3 segundos de folga para carregamento no celular
-    const tempoEstimado = Math.max(4000, (texto.length * 110) + 3000);
+    // Palavras curtas de contagem ("Um!", "Dois!") usam limite curto de 850ms para não travar entre 1 e 2;
+    // Frases completas mantêm folga dinâmica de até 4s+ para leitura tranquila no celular.
+    const qtdPalavras = texto.trim().split(/\s+/).length;
+    const tempoEstimado = qtdPalavras <= 2
+      ? 850
+      : Math.max(3000, (texto.length * 105) + 2000);
+
     const timerSeguranca = setTimeout(concluirFala, tempoEstimado);
 
     this.falaAtual.onstart = () => {
@@ -160,10 +173,14 @@ const Jogo = {
     this.falaAtual.onend = concluirFala;
     this.falaAtual.onerror = concluirFala;
 
-    // Pequena pausa de 80ms após o cancel() evita corte mudo no Android/iOS
-    setTimeout(() => {
+    // Só aguarda 80ms se realmente cancelou uma fala anterior
+    if (precisouCancelar) {
+      setTimeout(() => {
+        window.speechSynthesis.speak(this.falaAtual);
+      }, 80);
+    } else {
       window.speechSynthesis.speak(this.falaAtual);
-    }, 80);
+    }
   },
 
   definirInstrucao(texto, falarAgora = false, aoTerminar = null) {
@@ -233,6 +250,9 @@ function voltarParaMapa() {
 }
 
 function abrirFase(numeroFase) {
+  // Pré-aquece o sintetizador de voz no toque do usuário antes de abrir qualquer fase
+  Jogo.aquecerVoz();
+
   if (numeroFase > Jogo.faseMaximaDesbloqueada) {
     Jogo.falar(`A pedra número ${numeroFase} ainda está trancada! Complete a fase anterior primeiro.`);
     return;

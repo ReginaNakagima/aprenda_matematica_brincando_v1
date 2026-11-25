@@ -159,6 +159,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 15px;
+  overflow: hidden;
 }
 
 #mascote-fase {
@@ -166,6 +167,7 @@ body {
   margin-bottom: 25px;
   cursor: pointer;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 #area-jogo {
@@ -791,20 +793,20 @@ body {
 /* 1. Telemóvel em pé (Retrato - largura até 768px) */
 @media (max-width: 768px) {
   #topo {
-    top: 10px;
-    right: 12px;
+    top: 8px;
+    right: 10px;
     gap: 8px;
   }
 
   #topo button {
-    font-size: 1.3rem;
-    padding: 8px 14px;
+    font-size: 1.25rem;
+    padding: 7px 13px;
     border-width: 3px;
   }
 
   #btn-reset {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     font-size: 1.1rem;
   }
 
@@ -844,111 +846,189 @@ body {
   .btn-navegacao-mapa.dir { right: 6px; }
 
   #tela-fase {
-    padding-top: 58px;
-    justify-content: flex-start;
+    padding: 46px 10px 10px 10px;
+    justify-content: center;
   }
 
   #mascote-fase {
-    font-size: 3.6rem;
-    margin-bottom: 14px;
+    font-size: 2.8rem;
+    margin-bottom: 8px;
   }
 
   #area-jogo {
-    gap: 22px;
-    max-width: 95vw;
+    gap: 14px;
+    max-width: 96vw;
+    max-height: calc(100dvh - 105px);
   }
 
   /* Redimensiona as 5 formas para caberem sem cortar */
   .forma {
-    width: 85px;
-    height: 85px;
+    width: 82px;
+    height: 82px;
   }
 
   .triangulo {
     width: 0;
     height: 0;
-    border-left: 45px solid transparent;
-    border-right: 45px solid transparent;
-    border-bottom: 85px solid #FFD740;
+    border-left: 44px solid transparent;
+    border-right: 44px solid transparent;
+    border-bottom: 82px solid #FFD740;
   }
 
   .retangulo {
-    width: 140px;
-    height: 78px;
+    width: 135px;
+    height: 75px;
   }
 
   .losango {
-    width: 72px;
-    height: 72px;
+    width: 70px;
+    height: 70px;
     margin: 0 12px;
   }
 
   .cesta {
     width: 145px;
-    height: 150px;
-    font-size: 2.5rem;
+    height: 140px;
+    font-size: 2.3rem;
     padding: 8px;
   }
 
-  .palco-apresentacao, .palco-soma, .palco-subtracao, .palco-ordens, .palco-oral {
-    padding: 18px 20px;
-    gap: 14px;
-    max-width: 94vw;
+  /* Palco de contagem 0 a 10 sem cortar o 9 e o 10 */
+  .palco-apresentacao {
+    padding: 12px 14px;
+    gap: 12px;
+    max-width: 95vw;
+    max-height: 74dvh;
   }
 
   .numero-gigante, .numero-oral-gigante {
-    font-size: 5rem;
+    font-size: clamp(3.5rem, 12vw, 4.8rem);
     min-width: auto;
   }
 
   .cesta-apresentacao {
-    width: 240px;
-    min-height: 130px;
-    font-size: 2.2rem;
+    width: 220px;
+    min-height: 120px;
+    max-height: 66dvh;
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .item-contagem {
+    margin: 2px 4px;
+  }
+
+  .numero-topo-maca {
+    font-size: 1.15rem;
+    margin-bottom: 1px;
+  }
+
+  .item-contagem .maca-icone {
+    font-size: clamp(1.5rem, 4.5dvh, 2.1rem);
+  }
+
+  /* Fase de ligar: caixas elásticas para 6, 8 e 10 maçãs caberem dentro */
+  .container-ligar {
+    height: auto;
+    max-height: 76dvh;
+    gap: 12px;
+  }
+
+  .coluna-ligar {
+    gap: 10px;
+    justify-content: center;
   }
 
   .card-ligar {
-    width: 170px;
-    height: 95px;
-    font-size: 2rem;
+    width: 175px;
+    height: auto;
+    min-height: 76px;
+    max-height: 22dvh;
+    padding: 6px 8px;
+    font-size: 1.75rem;
+    gap: 2px;
+    line-height: 1.05;
+  }
+
+  .card-ligar.macas-medias {
+    font-size: clamp(1.1rem, 4.1vw, 1.42rem);
+    gap: 1px;
   }
 
   .card-ligar.numero-card {
-    width: 95px;
-    font-size: 2.8rem;
+    width: 92px;
+    min-height: 76px;
+    font-size: 2.5rem;
+  }
+
+  /* Fase de Soma e Subtração em pé: evita cortar os botões de resposta embaixo */
+  .palco-soma, .palco-subtracao, .palco-ordens, .palco-oral {
+    padding: 12px 14px;
+    gap: 8px;
+    max-width: 95vw;
+    max-height: 60dvh;
+  }
+
+  .grupo-fruta {
+    padding: 8px 12px;
+    min-width: 85px;
+  }
+
+  .grupo-fruta .frutas {
+    font-size: 2.1rem;
+  }
+
+  .grupo-fruta .sub-num {
+    font-size: 1.4rem;
+    margin-top: 2px;
+  }
+
+  .sinal-matematico {
+    font-size: 2.6rem;
+  }
+
+  .cesta-resultado-soma {
+    padding: 8px 14px;
+    min-width: 95px;
+    min-height: 72px;
+    font-size: 2.2rem;
+  }
+
+  .opcoes-sequencia {
+    gap: 12px;
   }
 
   .slot-num {
-    min-width: 65px;
-    height: 65px;
-    font-size: 2rem;
+    min-width: 62px;
+    height: 60px;
+    font-size: 1.9rem;
   }
 
   .btn-opcao-num {
-    min-width: 85px;
-    height: 75px;
-    font-size: 2.2rem;
+    min-width: 78px;
+    height: 62px;
+    font-size: 2rem;
   }
 }
 
 /* 2. Telemóvel deitado (Paisagem - altura baixa até 520px) */
 @media (max-height: 520px) {
   #topo {
-    top: 8px;
-    right: 12px;
+    top: 6px;
+    right: 10px;
     gap: 8px;
   }
 
   #topo button {
-    font-size: 1.2rem;
-    padding: 6px 14px;
+    font-size: 1.15rem;
+    padding: 5px 12px;
     border-width: 3px;
   }
 
   #btn-reset {
-    width: 38px;
-    height: 38px;
-    font-size: 1.1rem;
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
   }
 
   .titulo-jogo {
@@ -974,95 +1054,167 @@ body {
   }
 
   #tela-fase {
-    padding: 8px 15px;
+    padding: 6px 12px;
     justify-content: center;
   }
 
   #mascote-fase {
-    font-size: 3.2rem;
-    margin-bottom: 10px;
+    font-size: 2.4rem;
+    margin-bottom: 4px;
   }
 
   #area-jogo {
-    gap: 24px;
+    gap: 10px;
     max-width: 96vw;
+    max-height: calc(100dvh - 58px);
   }
 
   /* Todas as 5 formas cabem lado a lado numa única linha sem cortar */
   .forma {
-    width: 82px;
-    height: 82px;
+    width: 78px;
+    height: 78px;
   }
 
   .triangulo {
     width: 0;
     height: 0;
-    border-left: 44px solid transparent;
-    border-right: 44px solid transparent;
-    border-bottom: 82px solid #FFD740;
+    border-left: 42px solid transparent;
+    border-right: 42px solid transparent;
+    border-bottom: 78px solid #FFD740;
   }
 
   .retangulo {
-    width: 135px;
-    height: 75px;
+    width: 130px;
+    height: 72px;
   }
 
   .losango {
-    width: 70px;
-    height: 70px;
+    width: 68px;
+    height: 68px;
     margin: 0 10px;
   }
 
   .cesta {
-    width: 180px;
-    height: 155px;
-    font-size: 2.8rem;
+    width: 175px;
+    height: 145px;
+    font-size: 2.5rem;
   }
 
-  .palco-apresentacao, .palco-soma, .palco-subtracao, .palco-ordens, .palco-oral {
-    padding: 14px 25px;
-    gap: 15px;
+  /* Contagem deitada */
+  .palco-apresentacao {
+    padding: 10px 18px;
+    gap: 16px;
+    max-height: 78dvh;
   }
 
-  .numero-gigante, .numero-oral-gigante {
-    font-size: 4.5rem;
+  .cesta-apresentacao {
+    width: 320px;
+    min-height: 110px;
+    max-height: 70dvh;
+    padding: 6px;
+    gap: 4px;
   }
 
-  .btn-microfone {
-    width: 78px;
-    height: 78px;
-    font-size: 2.3rem;
+  .numero-topo-maca {
+    font-size: 1rem;
   }
 
+  .item-contagem .maca-icone {
+    font-size: 1.7rem;
+  }
+
+  /* Fase de ligar deitada: 3 caixas cabem na vertical sem cortar a terceira */
   .container-ligar {
-    height: 270px;
+    height: auto;
+    max-height: 80dvh;
+  }
+
+  .coluna-ligar {
+    gap: 6px;
+    justify-content: center;
   }
 
   .card-ligar {
-    height: 76px;
-    width: 210px;
-    font-size: 2rem;
+    height: auto;
+    min-height: 52px;
+    max-height: 23dvh;
+    width: 225px;
+    padding: 4px 8px;
+    font-size: 1.55rem;
+    line-height: 1;
+  }
+
+  .card-ligar.macas-medias {
+    font-size: clamp(0.98rem, 4.1dvh, 1.25rem);
+    gap: 1px;
   }
 
   .card-ligar.numero-card {
-    width: 110px;
-    font-size: 2.8rem;
+    width: 100px;
+    min-height: 52px;
+    font-size: 2.1rem;
+  }
+
+  /* Soma e Subtração deitadas: sobra espaço para os botões 2, 3, 5 embaixo */
+  .palco-soma, .palco-subtracao, .palco-ordens, .palco-oral {
+    padding: 8px 18px;
+    gap: 12px;
+    max-height: 58dvh;
+  }
+
+  .grupo-fruta {
+    padding: 6px 14px;
+    min-width: 90px;
+  }
+
+  .grupo-fruta .frutas {
+    font-size: 2.1rem;
+  }
+
+  .grupo-fruta .sub-num {
+    font-size: 1.4rem;
+    margin-top: 2px;
+  }
+
+  .sinal-matematico {
+    font-size: 2.6rem;
+  }
+
+  .cesta-resultado-soma {
+    padding: 6px 16px;
+    min-width: 100px;
+    min-height: 68px;
+    font-size: 2.1rem;
+  }
+
+  .numero-gigante, .numero-oral-gigante {
+    font-size: 3.8rem;
+  }
+
+  .btn-microfone {
+    width: 72px;
+    height: 72px;
+    font-size: 2.1rem;
   }
 
   .fila-numeros {
-    padding: 12px 20px;
+    padding: 10px 18px;
     gap: 10px;
   }
 
   .slot-num {
-    min-width: 70px;
-    height: 64px;
-    font-size: 2.2rem;
+    min-width: 65px;
+    height: 58px;
+    font-size: 2rem;
+  }
+
+  .opcoes-sequencia {
+    gap: 14px;
   }
 
   .btn-opcao-num {
-    min-width: 90px;
-    height: 68px;
-    font-size: 2.3rem;
+    min-width: 82px;
+    height: 54px;
+    font-size: 2rem;
   }
 }
