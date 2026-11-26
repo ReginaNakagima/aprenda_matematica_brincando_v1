@@ -1456,3 +1456,73 @@ body {
     font-size: clamp(1rem, 4.8vh, 1.4rem) !important;
   }
 }
+
+/* ===== AJUSTE FINO DA CAIXA DE RESULTADO NA FASE 7 (SUBTRAÇÃO) ===== */
+.palco-subtracao {
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  padding: 10px 14px !important;
+  gap: clamp(6px, 1.8vw, 14px) !important;
+}
+
+.palco-subtracao .cesta-resultado-soma {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 82px !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 76px !important;
+  padding: 6px 12px !important;
+  gap: 4px !important;
+  box-sizing: border-box !important;
+}
+
+/* Deixa as frutas da resposta lado a lado e proporcionais */
+.palco-subtracao #linha-sobras-ex,
+.palco-subtracao .cesta-resultado-soma > div:first-child {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+  font-size: clamp(1.3rem, 4.5vw, 1.9rem) !important;
+  line-height: 1.1 !important;
+}
+
+.palco-subtracao .maca-animada {
+  font-size: clamp(1.3rem, 4.5vw, 1.9rem) !important;
+  width: auto !important;
+  height: auto !important;
+  line-height: 1.1 !important;
+  display: inline-block !important;
+}
+
+/* Garante que o número do resultado (ex: 2) não fique esmagado nem cortado */
+.palco-subtracao .cesta-resultado-soma .sub-num {
+  font-size: clamp(1.4rem, 4.5vw, 2rem) !important;
+  line-height: 1.1 !important;
+  margin: 0 !important;
+  display: block !important;
+}
+
+/* Ajuste específico para celular DEITADO (landscape) na Fase 7 */
+@media (orientation: landscape) and (max-height: 500px) {
+  .palco-subtracao .cesta-resultado-soma {
+    min-width: 72px !important;
+    min-height: 62px !important;
+    padding: 4px 10px !important;
+  }
+
+  .palco-subtracao #linha-sobras-ex,
+  .palco-subtracao .cesta-resultado-soma > div:first-child,
+  .palco-subtracao .maca-animada {
+    font-size: clamp(1.1rem, 5vh, 1.5rem) !important;
+  }
+
+  .palco-subtracao .cesta-resultado-soma .sub-num {
+    font-size: clamp(1.2rem, 5.5vh, 1.65rem) !important;
+  }
+}
