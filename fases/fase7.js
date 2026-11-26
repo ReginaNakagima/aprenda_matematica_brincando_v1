@@ -66,7 +66,7 @@ window.Fases[7] = {
   },
 
   apresentarExemplo(index) {
-    if (Jogo.faseAtual !== 6) return;
+    if (Jogo.faseAtual !== 7) return;
 
     if (index < this.exemplos.length) {
       const ex = this.exemplos[index];
@@ -148,7 +148,7 @@ window.Fases[7] = {
 
     const d = this.desafios[this.indiceDesafio];
     const opcoesHTML = d.opcoes.map(op => `
-      <button class="btn-opcao-num" onclick="window.Fases[6].verificar(${op}, this)">${op}</button>
+      <button class="btn-opcao-num" onclick="window.Fases[7].verificar(${op}, this)">${op}</button>
     `).join('');
 
     areaJogo.innerHTML = `
