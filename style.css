@@ -1218,3 +1218,66 @@ body {
     font-size: 2rem;
   }
 }
+
+/* ===== CORREÇÕES DE RESPONSIVIDADE E MICROFONE VERDE ===== */
+
+/* Microfone verde quando ativo */
+.btn-microfone.mic-verde,
+.btn-microfone.ouvindo {
+  background: radial-gradient(circle at 30% 30%, #66BB6A, #2E7D32) !important;
+  box-shadow: 0 6px 0 #1B5E20, 0 0 22px rgba(76, 175, 80, 0.85) !important;
+  transform: scale(1.06);
+}
+
+/* Ajuste do cartão da Fase 4 para não vazar texto nem cortar o botão em paisagem */
+.palco-oral {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: min(92%, 440px);
+  max-height: 82vh;
+  padding: 10px 16px;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+.numero-oral-gigante {
+  font-size: clamp(2.6rem, 11vh, 4.5rem) !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
+.btn-microfone {
+  width: clamp(64px, 16vh, 88px) !important;
+  height: clamp(64px, 16vh, 88px) !important;
+  font-size: clamp(1.8rem, 7vh, 2.5rem) !important;
+  flex-shrink: 0;
+}
+
+.feedback-fala-visual {
+  font-size: clamp(0.9rem, 3.6vh, 1.15rem) !important;
+  line-height: 1.2 !important;
+  text-align: center;
+  margin: 2px 0 !important;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.btn-ajuda-adulto {
+  padding: 5px 14px !important;
+  font-size: clamp(0.8rem, 3.2vh, 0.95rem) !important;
+  margin-top: 2px !important;
+  flex-shrink: 0;
+}
+
+/* Coruja no mapa posicionada acima do botão para nunca cobrir o número da fase */
+.mascote-mapa,
+#mascote-mapa,
+.coruja-mapa {
+  transform: translate(-50%, -95%) !important;
+  width: clamp(46px, 11vh, 64px) !important;
+  height: auto !important;
+  pointer-events: none;
+  z-index: 15;
+}
