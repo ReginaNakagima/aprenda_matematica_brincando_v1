@@ -1,14 +1,39 @@
 window.Fases[4] = {
   desafios: [
-    { numero: 1, aceitos: ['1', 'um', 'uma', 'hum', 'uno', 'bom'], dica: 'Diga bem alto: UM!' },
-    { numero: 3, aceitos: ['3', 'três', 'tres', 'treis', 'fez', 'vez'], dica: 'Que número é este? Diga em voz alta!' },
-    { numero: 5, aceitos: ['5', 'cinco', 'sinto'], dica: 'E este número aqui? Fale no microfone!' },
-    { numero: 0, aceitos: ['0', 'zero', 'quero'], dica: 'Este é redondinho! Qual é o nome dele?' },
-    { numero: 7, aceitos: ['7', 'sete', 'set'], dica: 'Agora fale o nome deste número!' },
-    { numero: 10, aceitos: ['10', 'dez', 'dés', 'des', 'pé'], dica: 'Para terminar, que número é este?' }
+    {
+      numero: 1,
+      aceitos: ['1', 'um', 'uma', 'hum', 'uno', 'bom', 'com', 'uns'],
+      dica: 'Diga bem alto: UM!'
+    },
+    {
+      numero: 3,
+      aceitos: ['3', 'três', 'tres', 'treis', 'fez', 'vez', 'mês', 'mes', 'tais', 'reis'],
+      dica: 'Que número é este? Diga em voz alta!'
+    },
+    {
+      numero: 5,
+      aceitos: ['5', 'cinco', 'sinto', 'cinto', 'sim', 'sinco', 'circo'],
+      dica: 'E este número aqui? Fale no microfone!'
+    },
+    {
+      numero: 0,
+      aceitos: ['0', 'zero', 'quero', 'cera', 'fera', 'serra', 'zelo', 'certo'],
+      dica: 'Este é redondinho! Qual é o nome dele?'
+    },
+    {
+      numero: 7,
+      aceitos: ['7', 'sete', 'set', 'sede', 'certa', 'certo', 'cega', 'seco'],
+      dica: 'Agora fale o nome deste número!'
+    },
+    {
+      numero: 10,
+      aceitos: ['10', 'dez', 'dés', 'des', 'pé', 'pés', 'vez', 'fez', 'dá', 'das'],
+      dica: 'Para terminar, que número é este?'
+    }
   ],
   indice: 0,
   reconhecimento: null,
+  timerEscuta: null,
   ouvindoAgora: false,
   jaAcertouRodada: false,
 
@@ -24,6 +49,8 @@ window.Fases[4] = {
 
   pararEscuta() {
     this.ouvindoAgora = false;
+    clearTimeout(this.timerEscuta);
+
     if (this.reconhecimento) {
       try {
         this.reconhecimento.onresult = null;
@@ -33,6 +60,9 @@ window.Fases[4] = {
       } catch (e) {}
       this.reconhecimento = null;
     }
+
+    const btn = document.getElementById('btn-mic-oral');
+    if (btn) btn.classList.remove('ouvindo');
   },
 
   mostrarDesafio() {
@@ -54,14 +84,12 @@ window.Fases[4] = {
       </div>
     `;
 
-    // Apenas dá a dica em voz alta; deixa o toque no 🎤 livre para abrir o microfone com gesto do usuário
     Jogo.definirInstrucao(atual.dica, true);
   },
 
   escutar() {
     if (Jogo.estado !== 'jogando' || this.jaAcertouRodada) return;
 
-    // Interrompe imediatamente a fala da coruja para liberar o áudio do celular
     window.speechSynthesis.cancel();
     this.pararEscuta();
 
@@ -70,21 +98,30 @@ window.Fases[4] = {
     const btn = document.getElementById('btn-mic-oral');
 
     if (!SpeechRecognition) {
-      if (status) status.textContent = 'Navegador sem voz. Fale alto e toque em ✔️!';
+      if (status) status.textContent = 'Fale em voz alta e toque em ✔️!';
       return;
     }
 
-    // Cria uma nova instância limpa a cada toque (evita travamento do Android)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const rec = new SpeechRecognition();
     rec.lang = 'pt-BR';
     rec.continuous = false;
-    rec.interimResults = true;
+    // No iOS/Safari, resultados parciais (interimResults) costumam falhar em palavras isoladas
+    rec.interimResults = !isIOS;
     rec.maxAlternatives = 5;
+
+    let ultimaFalaCaptada = '';
 
     rec.onstart = () => {
       this.ouvindoAgora = true;
       if (btn) btn.classList.add('ouvindo');
       if (status) status.textContent = '👂 Pode falar agora!';
+
+      this.timerEscuta = setTimeout(() => {
+        if (this.ouvindoAgora && !this.jaAcertouRodada) {
+          try { rec.stop(); } catch (e) {}
+        }
+      }, 4500);
     };
 
     rec.onresult = (event) => {
@@ -96,12 +133,14 @@ window.Fases[4] = {
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (event.results[i].isFinal) ehFinal = true;
         for (let alt = 0; alt < event.results[i].length; alt++) {
-          transcricoes.push(event.results[i][alt].transcript.toLowerCase().trim());
+          const texto = event.results[i][alt].transcript.toLowerCase().trim();
+          if (texto) transcricoes.push(texto);
         }
       }
 
-      if (status && transcricoes[0]) {
-        status.textContent = `Ouvi: "${transcricoes[0]}"`;
+      if (transcricoes[0]) {
+        ultimaFalaCaptada = transcricoes[0];
+        if (status) status.textContent = `Ouvi: "${ultimaFalaCaptada}"`;
       }
 
       const atual = this.desafios[this.indice];
@@ -112,40 +151,50 @@ window.Fases[4] = {
       if (acertou) {
         this.jaAcertouRodada = true;
         this.pararEscuta();
-        if (btn) btn.classList.remove('ouvindo');
         this.avancarAcerto();
       } else if (ehFinal && transcricoes.length > 0) {
+        this.pararEscuta();
         this.validarFala(transcricoes);
       }
     };
 
     rec.onerror = (event) => {
-      this.ouvindoAgora = false;
-      if (btn) btn.classList.remove('ouvindo');
+      this.pararEscuta();
       if (this.jaAcertouRodada) return;
 
-      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-        if (status) status.textContent = '🔒 Permita o microfone no navegador ou use ✔️';
-      } else if (event.error === 'no-speech') {
-        if (status) status.textContent = 'Não ouvi som. Toque no 🎤 e fale bem perto!';
-      } else if (event.error === 'network') {
-        if (status) status.textContent = 'Sem rede para voz. Use o botão ✔️!';
-      } else {
-        if (status) status.textContent = `Toque no 🎤 de novo (${event.error})`;
+      if (status) {
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          status.textContent = '🔒 Permita o microfone no navegador ou use ✔️!';
+        } else {
+          status.textContent = 'Toque no 🎤 e fale bem perto!';
+        }
       }
     };
 
     rec.onend = () => {
+      const estavaOuvindo = this.ouvindoAgora;
       this.ouvindoAgora = false;
+      clearTimeout(this.timerEscuta);
       if (btn) btn.classList.remove('ouvindo');
+
+      if (estavaOuvindo && !this.jaAcertouRodada && ultimaFalaCaptada) {
+        const atual = this.desafios[this.indice];
+        const bateu = atual.aceitos.some(p => ultimaFalaCaptada.includes(p));
+        if (bateu) {
+          this.jaAcertouRodada = true;
+          this.avancarAcerto();
+        } else {
+          this.validarFala([ultimaFalaCaptada]);
+        }
+      }
     };
 
     this.reconhecimento = rec;
-
     try {
       rec.start();
     } catch (e) {
-      if (status) status.textContent = 'Toque no 🎤 novamente para falar.';
+      this.pararEscuta();
+      if (status) status.textContent = 'Toque no 🎤 novamente!';
     }
   },
 
@@ -167,8 +216,6 @@ window.Fases[4] = {
     if (Jogo.estado !== 'jogando' || this.jaAcertouRodada) return;
     this.jaAcertouRodada = true;
     this.pararEscuta();
-    const btn = document.getElementById('btn-mic-oral');
-    if (btn) btn.classList.remove('ouvindo');
     this.avancarAcerto();
   },
 

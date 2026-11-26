@@ -1,3 +1,14 @@
+(function abrirNoChromeAndroid() {
+  const ua = navigator.userAgent;
+  const isAndroid = /Android/i.test(ua);
+  const isSamsungOuWebView = /SamsungBrowser|wv|FBAN|FBAV|Instagram/i.test(ua);
+
+  if (isAndroid && isSamsungOuWebView) {
+    const urlSemProtocolo = window.location.href.replace(/^https?:\/\//, '');
+    window.location.href = `intent://${urlSemProtocolo}#Intent;scheme=https;package=com.android.chrome;end`;
+  }
+})();
+
 window.Fases = {};
 
 const CHAVE_STORAGE = 'aprenda_matematica_progresso_v1';
@@ -93,10 +104,11 @@ const Jogo = {
       `;
       container.appendChild(btn);
 
-      // Posiciona a corujinha em cima da pedra atual da criança
+      // Posiciona a corujinha logo acima da pedra atual sem cobrir o número
       if (numFase === this.faseMaximaDesbloqueada) {
-        mascoteMapa.style.left = `calc(${pos.left} - 2%)`;
-        mascoteMapa.style.top = `calc(${pos.top} - 16%)`;
+        mascoteMapa.style.left = pos.left;
+        mascoteMapa.style.top = `calc(${pos.top} - clamp(52px, 11vh, 88px))`;
+        mascoteMapa.style.transform = 'translateX(-50%)';
         mascoteMapa.classList.remove('oculto');
         mascoteVisivelNaPagina = true;
       }
