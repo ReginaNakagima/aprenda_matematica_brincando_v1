@@ -1281,3 +1281,178 @@ body {
   pointer-events: none;
   z-index: 15;
 }
+
+/* ===== RESPONSIVIDADE COMPLETA: FASE 6 (ORDENS/COMPOSIÇÃO) E FASE 7 (SUBTRAÇÃO) ===== */
+
+/* Container principal da Fase 6 */
+.palco-ordens {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(94%, 560px);
+  max-height: 78vh;
+  padding: 12px 14px;
+  gap: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.titulo-ordem {
+  font-size: clamp(1.05rem, 3.8vw, 1.55rem) !important;
+  line-height: 1.15 !important;
+  text-align: center;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+
+/* Vitrine dos blocos (Unidades, Dezenas, Centenas, Milhar) */
+.vitrine-blocos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-height: 100%;
+}
+
+.bloco-ordem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px !important;
+  min-width: 72px !important;
+  max-width: 110px;
+  flex: 1 1 28%;
+  box-sizing: border-box;
+}
+
+.bloco-ordem .icone {
+  font-size: clamp(1.5rem, 5vw, 2.3rem) !important;
+  line-height: 1.1 !important;
+}
+
+.bloco-ordem .valor {
+  font-size: clamp(1rem, 3.6vw, 1.45rem) !important;
+  line-height: 1.1 !important;
+  margin-top: 2px;
+}
+
+/* Cartão de composição (Depois do 10 / Depois do 20) */
+.composicao-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px !important;
+  box-sizing: border-box;
+  font-size: clamp(1.3rem, 4.5vw, 2rem) !important;
+}
+
+.composicao-resultado {
+  padding: 6px 14px !important;
+  font-size: clamp(1.5rem, 5vw, 2.2rem) !important;
+}
+
+/* Palco da Fase 7 (Subtração) e desafios de sequência */
+.palco-subtracao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 2vw, 14px);
+  width: min(94%, 560px);
+  max-height: 56vh;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+
+.palco-subtracao .grupo-fruta,
+.palco-subtracao .cesta-resultado-soma {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px !important;
+  min-width: 64px;
+  box-sizing: border-box;
+}
+
+.palco-subtracao .frutas {
+  font-size: clamp(1.2rem, 4.2vw, 1.9rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: 2px;
+}
+
+.palco-subtracao .sub-num {
+  font-size: clamp(1.2rem, 4vw, 1.7rem) !important;
+  line-height: 1.1 !important;
+}
+
+.palco-subtracao .sinal-matematico {
+  font-size: clamp(1.6rem, 5vw, 2.4rem) !important;
+  line-height: 1 !important;
+}
+
+/* Ajustes específicos para celular DEITADO (landscape) */
+@media (orientation: landscape) and (max-height: 500px) {
+  .palco-ordens {
+    max-height: 70vh;
+    padding: 6px 12px;
+    gap: 6px;
+  }
+
+  .titulo-ordem {
+    font-size: clamp(0.95rem, 3.8vh, 1.25rem) !important;
+  }
+
+  .vitrine-blocos {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .bloco-ordem {
+    padding: 4px 6px !important;
+    min-width: 0 !important;
+    flex: 1 1 0;
+  }
+
+  .bloco-ordem .icone {
+    font-size: clamp(1.2rem, 6.5vh, 1.8rem) !important;
+  }
+
+  .bloco-ordem .valor {
+    font-size: clamp(0.85rem, 4vh, 1.15rem) !important;
+  }
+
+  .composicao-card {
+    flex-wrap: nowrap;
+    padding: 6px 10px !important;
+    gap: 8px;
+    font-size: clamp(1.1rem, 5.5vh, 1.6rem) !important;
+  }
+
+  .composicao-resultado {
+    padding: 4px 12px !important;
+    font-size: clamp(1.2rem, 6vh, 1.7rem) !important;
+  }
+
+  .palco-subtracao {
+    flex-wrap: nowrap;
+    max-height: 48vh;
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .palco-subtracao .frutas {
+    font-size: clamp(1.05rem, 5.2vh, 1.5rem) !important;
+  }
+
+  .palco-subtracao .sub-num {
+    font-size: clamp(1rem, 4.8vh, 1.4rem) !important;
+  }
+}
