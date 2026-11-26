@@ -45,6 +45,17 @@ window.Fases[7] = {
 
   iniciar() {
     this.indiceDesafio = 0;
+
+    const areaJogo = document.getElementById('area-jogo');
+    if (areaJogo) {
+      areaJogo.innerHTML = `
+        <div class="palco-subtracao" style="flex-direction: column; gap: 8px;">
+          <div class="sinal-matematico pulsar-destaque" style="font-size: clamp(4.5rem, 18vh, 7.5rem); color: #D32F2F; line-height: 1;">−</div>
+          <div class="titulo-ordem" style="color: #D32F2F;">SINAL DE MENOS</div>
+        </div>
+      `;
+    }
+
     Jogo.definirInstrucao(
       'Bem-vindo à Subtração! Subtrair é tirar coisas! Este tracinho se chama MENOS!',
       true,
