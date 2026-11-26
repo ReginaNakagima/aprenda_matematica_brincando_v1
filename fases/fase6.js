@@ -99,7 +99,7 @@ window.Fases[6] = {
   },
 
   mostrarBlocos(etapa, indexItem, indexEtapa) {
-    if (Jogo.faseAtual !== 5) return;
+    if (Jogo.faseAtual !== 6) return;
 
     if (indexItem < etapa.valores.length) {
       const vitrine = document.getElementById('vitrine-blocos');
@@ -155,7 +155,7 @@ window.Fases[6] = {
     const desafio = this.desafios[this.indiceDesafio];
     const slotsHTML = desafio.sequencia.map(n => `<div class="slot-num">${n}</div>`).join('');
     const opcoesHTML = desafio.opcoes.map(op => `
-      <button class="btn-opcao-num" onclick="window.Fases[5].verificar(${op}, this)">${op}</button>
+      <button class="btn-opcao-num" onclick="window.Fases[6].verificar(${op}, this)">${op}</button>
     `).join('');
 
     areaJogo.innerHTML = `
