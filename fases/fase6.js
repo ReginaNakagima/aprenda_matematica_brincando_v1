@@ -194,15 +194,9 @@ window.Fases[6] = {
         Jogo.falar('Incrível! Você já sabe contar até os milhares!', () => Jogo.concluirFase());
       }
     } else {
-      Jogo.estado = 'apresentando';
       botaoEl.classList.add('erro');
-      const nivelAlcancado = this.indiceDesafio === 0
-        ? 'os primeiros números'
-        : this.desafios[this.indiceDesafio - 1].nivel;
-
-      Jogo.falar(`Parabéns! Você já sabe contar muito bem até ${nivelAlcancado}! Ganhou uma estrela pelo seu esforço!`, () => {
-        Jogo.concluirFase();
-      });
+      setTimeout(() => botaoEl.classList.remove('erro'), 350);
+      Jogo.falar(`Quase lá! Esse é o ${escolha}. Observe a sequência ${desafio.sequencia.join(', ')} e tente de novo!`);
     }
   }
 };
