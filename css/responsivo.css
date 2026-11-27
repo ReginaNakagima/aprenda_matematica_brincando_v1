@@ -1,0 +1,345 @@
+/* =========================================================
+   RESPONSIVIDADE PARA TELEMÓVEL (EM PÉ E DEITADO / PAISAGEM)
+   ========================================================= */
+
+/* 1. Telemóvel em pé (Retrato - largura até 768px) */
+@media (max-width: 768px) {
+  #topo {
+    top: 8px;
+    right: 10px;
+    gap: 8px;
+  }
+
+  #topo button {
+    font-size: 1.25rem;
+    padding: 7px 13px;
+    border-width: 3px;
+  }
+
+  #btn-reset {
+    width: 38px;
+    height: 38px;
+    font-size: 1.1rem;
+  }
+
+  .titulo-jogo {
+    top: 10%;
+    width: 95vw;
+  }
+
+  .pedra {
+    width: 58px;
+    height: 52px;
+    border-width: 3px;
+    border-radius: 18px;
+  }
+
+  .pedra .num { font-size: 1.5rem; }
+
+  .pedra .badge {
+    font-size: 1rem;
+    top: -10px;
+    right: -8px;
+  }
+
+  #mascote-mapa { font-size: 3rem; }
+
+  .btn-navegacao-mapa {
+    width: 46px;
+    height: 68px;
+    font-size: 1.8rem;
+    border-width: 3px;
+  }
+  .btn-navegacao-mapa.esq { left: 6px; }
+  .btn-navegacao-mapa.dir { right: 6px; }
+
+  #tela-fase {
+    padding: 46px 10px 10px 10px;
+    justify-content: center;
+  }
+
+  #mascote-fase {
+    font-size: 2.8rem;
+    margin-bottom: 8px;
+  }
+
+  #area-jogo {
+    gap: 14px;
+    max-width: 96vw;
+    max-height: calc(100dvh - 105px);
+  }
+
+  .forma { width: 82px; height: 82px; }
+
+  .triangulo {
+    border-left: 44px solid transparent;
+    border-right: 44px solid transparent;
+    border-bottom: 82px solid #FFD740;
+  }
+
+  .retangulo { width: 135px; height: 75px; }
+  .losango { width: 70px; height: 70px; margin: 0 12px; }
+
+  .cesta {
+    width: 145px;
+    height: 140px;
+    font-size: 2.3rem;
+    padding: 8px;
+  }
+
+  .palco-apresentacao {
+    padding: 12px 14px;
+    gap: 12px;
+    max-width: 95vw;
+    max-height: 74dvh;
+  }
+
+  .numero-gigante {
+    font-size: clamp(3.5rem, 12vw, 4.8rem);
+    min-width: auto;
+  }
+
+  .cesta-apresentacao {
+    width: 220px;
+    min-height: 120px;
+    max-height: 66dvh;
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .item-contagem { margin: 2px 4px; }
+  .numero-topo-maca { font-size: 1.15rem; margin-bottom: 1px; }
+  .item-contagem .maca-icone { font-size: clamp(1.5rem, 4.5dvh, 2.1rem); }
+
+  .container-ligar {
+    height: auto;
+    max-height: 76dvh;
+    gap: 12px;
+  }
+
+  .coluna-ligar {
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .card-ligar {
+    width: 175px;
+    height: auto;
+    min-height: 76px;
+    max-height: 22dvh;
+    padding: 6px 8px;
+    font-size: 1.75rem;
+    gap: 2px;
+    line-height: 1.05;
+  }
+
+  .card-ligar.macas-medias {
+    font-size: clamp(1.1rem, 4.1vw, 1.42rem);
+    gap: 1px;
+  }
+
+  .card-ligar.numero-card {
+    width: 92px;
+    min-height: 76px;
+    font-size: 2.5rem;
+  }
+
+  .palco-soma {
+    padding: 12px 14px;
+    gap: 8px;
+    max-width: 95vw;
+    max-height: 60dvh;
+  }
+
+  .slot-num {
+    min-width: 62px;
+    height: 60px;
+    font-size: 1.9rem;
+  }
+
+  .opcoes-sequencia { gap: 12px; }
+
+  .btn-opcao-num {
+    min-width: 78px;
+    height: 62px;
+    font-size: 2rem;
+  }
+}
+
+/* 2. Telemóvel deitado (Paisagem - altura baixa até 520px) */
+@media (max-height: 520px) {
+  #topo {
+    top: 6px;
+    right: 10px;
+    gap: 8px;
+  }
+
+  #topo button {
+    font-size: 1.15rem;
+    padding: 5px 12px;
+    border-width: 3px;
+  }
+
+  #btn-reset {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .titulo-jogo { top: 2%; }
+  .linha-1 { font-size: 1.4rem; }
+  .linha-2 { font-size: 2rem; }
+  .linha-3 { font-size: 1.6rem; }
+
+  .pedra { width: 62px; height: 54px; border-width: 3px; }
+  .pedra .num { font-size: 1.6rem; }
+  #mascote-mapa { font-size: 3.2rem; }
+
+  #tela-fase {
+    padding: 6px 12px;
+    justify-content: center;
+  }
+
+  #mascote-fase {
+    font-size: 2.4rem;
+    margin-bottom: 4px;
+  }
+
+  #area-jogo {
+    gap: 10px;
+    max-width: 96vw;
+    max-height: calc(100dvh - 58px);
+  }
+
+  .forma { width: 78px; height: 78px; }
+
+  .triangulo {
+    border-left: 42px solid transparent;
+    border-right: 42px solid transparent;
+    border-bottom: 78px solid #FFD740;
+  }
+
+  .retangulo { width: 130px; height: 72px; }
+  .losango { width: 68px; height: 68px; margin: 0 10px; }
+
+  .cesta {
+    width: 175px;
+    height: 145px;
+    font-size: 2.5rem;
+  }
+
+  .palco-apresentacao {
+    padding: 10px 18px;
+    gap: 16px;
+    max-height: 78dvh;
+  }
+
+  .cesta-apresentacao {
+    width: 320px;
+    min-height: 110px;
+    max-height: 70dvh;
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .numero-topo-maca { font-size: 1rem; }
+  .item-contagem .maca-icone { font-size: 1.7rem; }
+
+  .container-ligar {
+    height: auto;
+    max-height: 80dvh;
+  }
+
+  .coluna-ligar {
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .card-ligar {
+    height: auto;
+    min-height: 52px;
+    max-height: 23dvh;
+    width: 225px;
+    padding: 4px 8px;
+    font-size: 1.55rem;
+    line-height: 1;
+  }
+
+  .card-ligar.macas-medias {
+    font-size: clamp(0.98rem, 4.1dvh, 1.25rem);
+    gap: 1px;
+  }
+
+  .card-ligar.numero-card {
+    width: 100px;
+    min-height: 52px;
+    font-size: 2.1rem;
+  }
+
+  .palco-soma,
+  .palco-subtracao {
+    padding: 6px 14px;
+    gap: 8px;
+    max-height: 48vh;
+  }
+
+  .grupo-fruta {
+    padding: 5px 10px;
+    min-width: 68px;
+  }
+
+  .grupo-fruta .frutas { font-size: clamp(1.05rem, 5.2vh, 1.5rem); }
+  .grupo-fruta .sub-num { font-size: clamp(1rem, 4.8vh, 1.4rem); }
+
+  .cesta-resultado-soma {
+    min-width: 72px;
+    min-height: 62px;
+    padding: 4px 10px;
+  }
+
+  .palco-subtracao .maca-animada { font-size: clamp(1.1rem, 5vh, 1.5rem); }
+  .palco-subtracao .cesta-resultado-soma .sub-num { font-size: clamp(1.2rem, 5.5vh, 1.65rem); }
+
+  .palco-ordens {
+    max-height: 70vh;
+    padding: 6px 12px;
+    gap: 6px;
+  }
+
+  .titulo-ordem { font-size: clamp(0.95rem, 3.8vh, 1.25rem); }
+  .vitrine-blocos { flex-wrap: nowrap; gap: 6px; }
+  .bloco-ordem { padding: 4px 6px; min-width: 0; flex: 1 1 0; }
+  .bloco-ordem .icone { font-size: clamp(1.2rem, 6.5vh, 1.8rem); }
+  .bloco-ordem .valor { font-size: clamp(0.85rem, 4vh, 1.15rem); }
+
+  .img-ordem {
+    width: clamp(36px, 12vh, 54px);
+    height: clamp(36px, 12vh, 54px);
+  }
+
+  .img-ordem.img-caminhao {
+    width: clamp(52px, 18vh, 80px);
+  }
+
+  .img-ordem-mini {
+    width: clamp(28px, 10vh, 42px);
+    height: clamp(28px, 10vh, 42px);
+  }
+
+  .composicao-card {
+    flex-wrap: nowrap;
+    padding: 6px 10px;
+    gap: 8px;
+    font-size: clamp(1.1rem, 5.5vh, 1.6rem);
+  }
+
+  .composicao-resultado {
+    padding: 4px 12px;
+    font-size: clamp(1.2rem, 6vh, 1.7rem);
+  }
+
+  .fila-numeros { padding: 10px 18px; gap: 10px; }
+  .slot-num { min-width: 65px; height: 58px; font-size: 2rem; }
+  .opcoes-sequencia { gap: 14px; }
+  .btn-opcao-num { min-width: 82px; height: 54px; font-size: 2rem; }
+}
