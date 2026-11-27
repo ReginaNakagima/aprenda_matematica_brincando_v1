@@ -252,6 +252,7 @@ function voltarParaMapa() {
   Jogo.estado = 'mapa';
   Jogo.faseAtual = null;
 
+  document.body.classList.remove('fundo-1ano');
   document.getElementById('tela-fase').classList.add('oculto');
   document.getElementById('btn-mapa').classList.add('oculto');
   document.getElementById('btn-reset').classList.remove('oculto');
@@ -278,6 +279,12 @@ function abrirFase(numeroFase) {
 
   Jogo.faseAtual = numeroFase;
   Jogo.estado = 'apresentando';
+
+  if (numeroFase >= 1 && numeroFase <= 7) {
+    document.body.classList.add('fundo-1ano');
+  } else {
+    document.body.classList.remove('fundo-1ano');
+  }
 
   document.getElementById('tela-mapa').classList.add('oculto');
   document.getElementById('btn-reset').classList.add('oculto');
