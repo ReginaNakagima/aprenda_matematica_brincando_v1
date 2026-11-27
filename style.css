@@ -1572,10 +1572,12 @@ body {
 }
 
 /* ===== PLANO DE FUNDO DAS FASES 1 A 7 ===== */
-body.fundo-1ano {
-  background-image: url('img/fundo_1ano.png');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+body.fundo-1ano,
+body.fundo-1ano #tela-fase {
+  background-color: transparent !important;
+  background-image: url('img/fundo_1ano.png') !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
 }
