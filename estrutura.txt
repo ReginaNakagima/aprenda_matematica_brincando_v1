@@ -1,11 +1,33 @@
-
 aprenda_matematica_brincando_v1/
 ├── index.html
-├── style.css
-├── main.js          (Controla apenas o Mapa, a Voz e o Progresso)
-└── fases/
-    ├── fase1.js     (Formas e Cores)
-    ├── fase2.js     (Muito e Pouco)
-    ├── fase3.js     (Contagem 0 a 10 e Ligar)
-    ├── fase4.js     (Dezenas, Centenas e Milhar)
-    └── fase5.js     (Próxima fase que você criar!)
+├── main.js
+├── css/
+│   ├── base.css          (fontes, reset, botões superiores, animações)
+│   ├── mapa.css          (cenário SVG, pedras da trilha, setas e coruja do mapa)
+│   ├── fases-1ano.css    (fases 1 a 7 + plano de fundo responsivo do 1º ano)
+│   ├── fases-2ano.css 
+│   ├── fases-3ano.css
+│   ├── fases-4ano.css
+│   ├── fases-5ano.css
+│   ├── fases-6ano.css
+│   ├── fases-7ano.css
+│   ├── fases-8ano.css
+│   ├── fases-9ano.css
+│   └── responsivo.css    (ajustes gerais para celular em pé e deitado)
+│
+├── fases/
+│   ├── fase1.js     (Formas e Cores)
+│   ├── fase2.js     (Muito e Pouco)
+│   ├── fase3.js     (Contagem 0 a 10 e Ligar)
+│   ├── fase4.js     (Ouvir a voz)
+│   ├── fase5.js     (Soma divertida)
+│   ├── fase6.js     (Dezenas, Centenas e Milhar)
+│   ├── fase7.js     (Subtração)
+│   ├── fase8.js 
+│   │      :
+│   │      
+│   └── fase?.js     (Próxima fase que você criar!)
+│   
+└── img/
+
+
