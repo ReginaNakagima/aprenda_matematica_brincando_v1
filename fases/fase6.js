@@ -11,8 +11,8 @@ window.Fases[6] = {
     {
       tipo: 'blocos',
       titulo: 'DEZENAS (De 10 em 10)',
-      introducao: 'Quando juntamos dez maçãs, formamos uma dezena! Veja como contamos de dez em dez!',
-      icone: '🧺',
+      introducao: 'Quando juntamos dez maçãs na cesta, formamos uma dezena! Veja como contamos de dez em dez!',
+      icone: '<img src="img/cesta-macas.png" alt="Cesta de maçãs" class="img-ordem">',
       valores: [10, 20, 30],
       falas: ['dez', 'vinte', 'trinta']
     },
@@ -21,11 +21,31 @@ window.Fases[6] = {
       titulo: 'DEPOIS DO 10 (10 + Unidades)',
       introducao: 'E o que vem depois do dez? É só juntar a cesta de dez com mais maçãs! Veja só!',
       itens: [
-        { visual: '🧺 + 🍎', resultado: 11, fala: 'Dez mais um, onze!' },
-        { visual: '🧺 + 🍎🍎', resultado: 12, fala: 'Dez mais dois, doze!' },
-        { visual: '🧺 + 🍎🍎🍎', resultado: 13, fala: 'Dez mais três, treze!' },
-        { visual: '🧺 + 🍎🍎🍎🍎', resultado: 14, fala: 'Dez mais quatro, quatorze!' },
-        { visual: '🧺 + 🍎🍎🍎🍎🍎', resultado: 15, fala: 'Dez mais cinco, quinze!' }
+        {
+          visual: '<img src="img/cesta-macas.png" alt="Cesta" class="img-ordem-mini"> + 🍎',
+          resultado: 11,
+          fala: 'Dez mais um, onze!'
+        },
+        {
+          visual: '<img src="img/cesta-macas.png" alt="Cesta" class="img-ordem-mini"> + 🍎🍎',
+          resultado: 12,
+          fala: 'Dez mais dois, doze!'
+        },
+        {
+          visual: '<img src="img/cesta-macas.png" alt="Cesta" class="img-ordem-mini"> + 🍎🍎🍎',
+          resultado: 13,
+          fala: 'Dez mais três, treze!'
+        },
+        {
+          visual: '<img src="img/cesta-macas.png" alt="Cesta" class="img-ordem-mini"> + 🍎🍎🍎🍎',
+          resultado: 14,
+          fala: 'Dez mais quatro, quatorze!'
+        },
+        {
+          visual: '<img src="img/cesta-macas.png" alt="Cesta" class="img-ordem-mini"> + 🍎🍎🍎🍎🍎',
+          resultado: 15,
+          fala: 'Dez mais cinco, quinze!'
+        }
       ]
     },
     {
@@ -33,24 +53,36 @@ window.Fases[6] = {
       titulo: 'DEPOIS DO 20 (20 + Unidades)',
       introducao: 'Com o vinte é a mesma coisa! Duas cestas de dez mais as maçãs soltas!',
       itens: [
-        { visual: '🧺🧺 + 🍎', resultado: 21, fala: 'Vinte mais um, vinte e um!' },
-        { visual: '🧺🧺 + 🍎🍎', resultado: 22, fala: 'Vinte mais dois, vinte e dois!' },
-        { visual: '🧺🧺 + 🍎🍎🍎', resultado: 23, fala: 'Vinte mais três, vinte e três!' }
+        {
+          visual: '<img src="img/cesta-macas.png" alt="Cesta" class="img-ordem-mini"><img src="img/cesta-macas.png" alt="Cesta" class="img-ordem-mini"> + 🍎',
+          resultado: 21,
+          fala: 'Vinte mais um, vinte e um!'
+        },
+        {
+          visual: '<img src="img/cesta-macas.png" alt="Cesta" class="img-ordem-mini"><img src="img/cesta-macas.png" alt="Cesta" class="img-ordem-mini"> + 🍎🍎',
+          resultado: 22,
+          fala: 'Vinte mais dois, vinte e dois!'
+        },
+        {
+          visual: '<img src="img/cesta-macas.png" alt="Cesta" class="img-ordem-mini"><img src="img/cesta-macas.png" alt="Cesta" class="img-ordem-mini"> + 🍎🍎🍎',
+          resultado: 23,
+          fala: 'Vinte mais três, vinte e três!'
+        }
       ]
     },
     {
       tipo: 'blocos',
       titulo: 'CENTENAS (De 100 em 100)',
-      introducao: 'Dez cestas formam uma centena! Vamos contar de cem em cem!',
-      icone: '📦',
+      introducao: 'Dez cestas enchem uma caixa de cem maçãs, formando uma centena! Vamos contar de cem em cem!',
+      icone: '<img src="img/caixa-macas.png" alt="Caixa de maçãs" class="img-ordem">',
       valores: [100, 200, 300],
       falas: ['cem', 'duzentos', 'trezentos']
     },
     {
       tipo: 'blocos',
       titulo: 'MILHAR (De 1000 em 1000)',
-      introducao: 'E dez caixotes formam um milhar! Vamos contar de mil em mil!',
-      icone: '🚚',
+      introducao: 'E dez caixotes enchem um caminhão com mil maçãs, formando um milhar! Vamos contar de mil em mil!',
+      icone: '<img src="img/caminhao-macas.png" alt="Caminhão de maçãs" class="img-ordem img-caminhao">',
       valores: [1000, 2000, 3000],
       falas: ['mil', 'dois mil', 'três mil']
     }
@@ -130,7 +162,7 @@ window.Fases[6] = {
       if (vitrine) {
         vitrine.innerHTML = `
           <div class="composicao-card">
-            <span>${item.visual}</span>
+            <span class="composicao-visual">${item.visual}</span>
             <span>=</span>
             <span class="composicao-resultado">${item.resultado}</span>
           </div>
