@@ -2,7 +2,7 @@
 body.fundo-1ano,
 body.fundo-1ano #tela-fase {
   background-color: #7ed957 !important;
-  background-image: url('../img/fundo_1ano.png') !important;
+  background-image: url('../img/fundo_1ano.png?v=2') !important;
   background-size: 100% 100% !important;
   background-position: center center !important;
   background-repeat: no-repeat !important;
