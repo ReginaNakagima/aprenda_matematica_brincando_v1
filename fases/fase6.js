@@ -98,7 +98,20 @@ window.Fases[6] = {
   ],
   indiceDesafio: 0,
 
+  preCarregarImagens() {
+    const arquivos = [
+      'img/cesta-macas.png',
+      'img/caixa-macas.png',
+      'img/caminhao-macas.png'
+    ];
+    arquivos.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  },
+
   iniciar() {
+    this.preCarregarImagens();
     this.indiceDesafio = 0;
     Jogo.definirInstrucao('Vamos aprender como os números crescem depois do dez, nas dezenas, centenas e milhares!', true, () => this.apresentarOrdem(0));
   },
