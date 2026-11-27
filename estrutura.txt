@@ -4,15 +4,15 @@ aprenda_matematica_brincando_v1/
 ├── css/
 │   ├── base.css          (fontes, reset, botões superiores, animações)
 │   ├── mapa.css          (cenário SVG, pedras da trilha, setas e coruja do mapa)
-│   ├── fases-1ano.css    (fases 1 a 7 + plano de fundo responsivo do 1º ano)
-│   ├── fases-2ano.css 
-│   ├── fases-3ano.css
-│   ├── fases-4ano.css
-│   ├── fases-5ano.css
-│   ├── fases-6ano.css
-│   ├── fases-7ano.css
-│   ├── fases-8ano.css
-│   ├── fases-9ano.css
+│   ├── fase-1ano.css    (fases 1 a 7 + plano de fundo responsivo do 1º ano)
+│   ├── fase-2ano.css 
+│   ├── fase-3ano.css
+│   ├── fase-4ano.css
+│   ├── fase-5ano.css
+│   ├── fase-6ano.css
+│   ├── fase-7ano.css
+│   ├── fase-8ano.css
+│   ├── fase-9ano.css
 │   └── responsivo.css    (ajustes gerais para celular em pé e deitado)
 │
 ├── fases/
