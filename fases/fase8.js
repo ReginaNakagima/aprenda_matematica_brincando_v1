@@ -1,9 +1,9 @@
 // =========================================================
 // FASE 8 (1º ANO): ESCRITA DOS NÚMEROS DE 0 A 10 NA TELA
-// 1. Traçados com Curvas de Bézier perfeitamente arredondadas
+// 1. Traçados arredondados com Curvas de Bézier
 // 2. Demonstração animada antes de cada número
-// 3. Pontilhado rigoroso (pune rabiscos fora do traçado)
-// 4. Escrita livre com validação geométrica e direcional
+// 3. Pontilhado com bloqueio imediato ao sair da trilha
+// 4. Escrita livre calibrada para traço natural de criança/mouse
 // =========================================================
 
 window.Fases[8] = {
@@ -19,13 +19,13 @@ window.Fases[8] = {
     let demonstrando = false;
     let animacaoId = null;
     let desafioConcluido = false;
+    let saiuDaTrilha = false;
 
     let pontosCheckpoints = [];
     let todosPontosCaminho = [];
     let tracosUsuario = [];
     let tracoAtual = [];
 
-    // Helper para gerar curvas cúbicas de Bézier ultra-suaves
     function bezierCubica(p0, p1, p2, p3, passos = 36) {
       const pts = [];
       for (let i = 0; i <= passos; i++) {
@@ -56,7 +56,6 @@ window.Fases[8] = {
       return pts;
     }
 
-    // Traçados didáticos arredondados (coordenadas normalizadas 0..1)
     function gerarCaminhosNormalizados(numero) {
       switch (numero) {
         case 0:
@@ -135,12 +134,10 @@ window.Fases[8] = {
 
         case 10:
           return [
-            // Dígito 1
             [
               ...linhaReta({ x: 0.15, y: 0.32 }, { x: 0.28, y: 0.15 }, 14),
               ...linhaReta({ x: 0.28, y: 0.15 }, { x: 0.28, y: 0.85 }, 28)
             ],
-            // Dígito 0 arredondado
             [
               ...bezierCubica({ x: 0.66, y: 0.15 }, { x: 0.43, y: 0.15 }, { x: 0.43, y: 0.85 }, { x: 0.66, y: 0.85 }, 32),
               ...bezierCubica({ x: 0.66, y: 0.85 }, { x: 0.89, y: 0.85 }, { x: 0.89, y: 0.15 }, { x: 0.66, y: 0.15 }, 32)
@@ -164,6 +161,7 @@ window.Fases[8] = {
       desafioConcluido = false;
       desenhando = false;
       demonstrando = false;
+      saiuDaTrilha = false;
       areaJogo.classList.remove('bloqueado');
 
       const numeroAlvo = etapa === 'guiada'
@@ -221,18 +219,16 @@ window.Fases[8] = {
       const caminhos = obterCaminhosEmPixels(numero, canvas.width, canvas.height);
 
       caminhos.forEach((stroke, idx) => {
-        // Faixa suave ao fundo
         ctx.save();
         ctx.beginPath();
-        ctx.lineWidth = 22;
+        ctx.lineWidth = 24;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.strokeStyle = 'rgba(0, 150, 136, 0.11)';
+        ctx.strokeStyle = 'rgba(0, 150, 136, 0.12)';
         stroke.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
         ctx.stroke();
         ctx.restore();
 
-        // Pontilhado único e arredondado
         ctx.save();
         ctx.beginPath();
         ctx.setLineDash([8, 11]);
@@ -244,7 +240,6 @@ window.Fases[8] = {
         ctx.stroke();
         ctx.restore();
 
-        // Ponto de início (verde no 1º traço, amarelo no 2º traço)
         const inicio = stroke[0];
         ctx.save();
         ctx.beginPath();
@@ -256,10 +251,8 @@ window.Fases[8] = {
         ctx.stroke();
         ctx.restore();
 
-        // Guarda todos os pontos do caminho para checar desvios
         stroke.forEach(p => todosPontosCaminho.push(p));
 
-        // Cria checkpoints uniformes a cada 14px ao longo da curva
         let ultimoCp = stroke[0];
         pontosCheckpoints.push({ x: ultimoCp.x, y: ultimoCp.y, coberto: false });
 
@@ -343,7 +336,7 @@ window.Fases[8] = {
     }
 
     // ---------------------------------------------------------
-    // 3. EVENTOS DE POINTER NO CANVAS (SEM LISTENER DUPLICADO)
+    // 3. EVENTOS DE POINTER NO CANVAS + BLOQUEIO IMEDIATO DE RABISCO
     // ---------------------------------------------------------
     function obterPosicao(evento) {
       const rect = canvas.getBoundingClientRect();
@@ -354,6 +347,15 @@ window.Fases[8] = {
         x: (evento.clientX - rect.left) * escalaX,
         y: (evento.clientY - rect.top) * escalaY
       };
+    }
+
+    function distanciaMinimaParaTrilha(pos) {
+      let minDist = Infinity;
+      for (const pCaminho of todosPontosCaminho) {
+        const d = Math.hypot(pos.x - pCaminho.x, pos.y - pCaminho.y);
+        if (d < minDist) minDist = d;
+      }
+      return minDist;
     }
 
     function configurarEventosPointer(numeroAlvo) {
@@ -368,8 +370,16 @@ window.Fases[8] = {
           desenharMoldePontilhado(numeroAlvo);
         }
 
-        desenhando = true;
         const pos = obterPosicao(e);
+
+        // Na etapa guiada, se começar fora do pontilhado já alerta na hora
+        if (etapa === 'guiada' && distanciaMinimaParaTrilha(pos) > 34) {
+          saiuDaTrilha = true;
+          reprovarComFeedback(`Comece em cima do pontilhado do número ${numeroAlvo}! Toque em Apagar.`);
+          return;
+        }
+
+        desenhando = true;
         tracoAtual = [pos];
 
         ctx.beginPath();
@@ -381,6 +391,22 @@ window.Fases[8] = {
         if (!desenhando || desafioConcluido) return;
         e.preventDefault();
         const pos = obterPosicao(e);
+
+        // Na etapa guiada, bloqueia imediatamente qualquer rabisco fora da trilha
+        if (etapa === 'guiada' && distanciaMinimaParaTrilha(pos) > 34) {
+          desenhando = false;
+          saiuDaTrilha = true;
+
+          ctx.lineWidth = 20;
+          ctx.lineCap = 'round';
+          ctx.strokeStyle = '#E53935';
+          ctx.lineTo(pos.x, pos.y);
+          ctx.stroke();
+
+          reprovarComFeedback(`Opa! Você saiu do pontilhado do número ${numeroAlvo}. Toque em Apagar e tente de novo!`);
+          return;
+        }
+
         tracoAtual.push(pos);
 
         ctx.lineWidth = 20;
@@ -395,18 +421,18 @@ window.Fases[8] = {
       };
 
       const encerrarPointer = (e) => {
-        if (!desenhando) return;
-        desenhando = false;
         if (canvas.hasPointerCapture(e.pointerId)) {
           canvas.releasePointerCapture(e.pointerId);
         }
+        if (!desenhando) return;
+        desenhando = false;
 
         if (tracoAtual.length > 0) {
           tracosUsuario.push([...tracoAtual]);
           tracoAtual = [];
         }
 
-        if (etapa === 'guiada' && !desafioConcluido) {
+        if (etapa === 'guiada' && !desafioConcluido && !saiuDaTrilha) {
           verificarConclusaoPontilhado(numeroAlvo);
         }
       };
@@ -417,6 +443,7 @@ window.Fases[8] = {
       document.getElementById('btn-limpar-escrita').onclick = () => {
         if (desafioConcluido) return;
         demonstrando = false;
+        saiuDaTrilha = false;
         if (animacaoId) cancelAnimationFrame(animacaoId);
         tracosUsuario = [];
         tracoAtual = [];
@@ -431,6 +458,7 @@ window.Fases[8] = {
       if (btnDemo) {
         btnDemo.onclick = () => {
           if (desafioConcluido) return;
+          saiuDaTrilha = false;
           tracosUsuario = [];
           executarDemonstracao(numeroAlvo);
         };
@@ -445,14 +473,14 @@ window.Fases[8] = {
     }
 
     // ---------------------------------------------------------
-    // 4. VALIDAÇÃO DO PONTILHADO (COBERTURA + PRECISÃO DO TRAÇO)
+    // 4. VALIDAÇÃO DO PONTILHADO (100% DENTRO DA TRILHA)
     // ---------------------------------------------------------
     function marcarCheckpointsProximos(pos) {
       if (etapa !== 'guiada') return;
       for (const cp of pontosCheckpoints) {
         if (!cp.coberto) {
           const dist = Math.hypot(pos.x - cp.x, pos.y - cp.y);
-          if (dist <= 18) {
+          if (dist <= 20) {
             cp.coberto = true;
           }
         }
@@ -460,49 +488,23 @@ window.Fases[8] = {
     }
 
     function verificarConclusaoPontilhado(numeroAlvo) {
-      if (pontosCheckpoints.length === 0) return;
+      if (pontosCheckpoints.length === 0 || saiuDaTrilha) return;
 
       const cobertos = pontosCheckpoints.filter(cp => cp.coberto).length;
       const percentualCobertura = cobertos / pontosCheckpoints.length;
 
-      // Ainda não terminou de cobrir o número
-      if (percentualCobertura < 0.95) return;
-
-      // Verifica se o usuário rabiscou muito fora do pontilhado (ex: fez um 8 em cima do 2)
-      const todosPtsUsuario = tracosUsuario.flat();
-      let pontosNaTrilha = 0;
-
-      for (const pUser of todosPtsUsuario) {
-        let dentro = false;
-        for (const pCaminho of todosPontosCaminho) {
-          if (Math.hypot(pUser.x - pCaminho.x, pUser.y - pCaminho.y) <= 26) {
-            dentro = true;
-            break;
-          }
-        }
-        if (dentro) pontosNaTrilha++;
-      }
-
-      const precisaoNaTrilha = todosPtsUsuario.length > 0
-        ? pontosNaTrilha / todosPtsUsuario.length
-        : 0;
-
-      if (precisaoNaTrilha >= 0.80) {
+      // Só aprova quando pelo menos 95% de todos os pontos forem cobertos sem sair da trilha
+      if (percentualCobertura >= 0.95) {
         avancarDesafio(numeroAlvo);
-      } else {
-        const lousa = document.querySelector('.lousa-container');
-        lousa.classList.add('erro');
-        setTimeout(() => lousa.classList.remove('erro'), 400);
-        Jogo.falar(`Você saiu bastante do pontilhado! Toque em Apagar e siga bem em cima da linha do número ${numeroAlvo}.`);
       }
     }
 
     // ---------------------------------------------------------
-    // 5. VALIDAÇÃO RIGOROSA DA ESCRITA LIVRE
+    // 5. VALIDAÇÃO CALIBRADA DA ESCRITA LIVRE (2, 5, 8, 10)
     // ---------------------------------------------------------
     function validarEscritaLivre(numeroAlvo) {
       const todosPontos = tracosUsuario.flat();
-      if (todosPontos.length < 15) {
+      if (todosPontos.length < 12) {
         Jogo.falar(`Escreva o número ${numeroAlvo} na lousa primeiro!`);
         return;
       }
@@ -518,73 +520,72 @@ window.Fases[8] = {
       const larguraUser = maxX - minX;
       const alturaUser = maxY - minY;
 
-      if (alturaUser < 80) {
+      if (alturaUser < 65) {
         Jogo.falar(`Escreva o número ${numeroAlvo} um pouco maior na lousa!`);
         return;
       }
 
       const ehDoisDigitos = String(numeroAlvo).length > 1;
       if (ehDoisDigitos) {
-        if (tracosUsuario.length < 2 || larguraUser < alturaUser * 0.68) {
-          reprovarEscrita(`Lembre-se: o número ${numeroAlvo} tem o 1 e o 0 lado a lado!`);
+        // O 10 exige pelo menos 2 traços (1 e 0) e proporção horizontal
+        if (tracosUsuario.length < 2 || larguraUser < alturaUser * 0.55) {
+          reprovarComFeedback(`Lembre-se: o número ${numeroAlvo} tem o 1 e o 0 lado a lado!`);
           return;
         }
       } else {
         if (numeroAlvo !== 4 && tracosUsuario.length > 2) {
-          reprovarEscrita(`Tente escrever apenas o número ${numeroAlvo}!`);
+          reprovarComFeedback(`Tente escrever apenas o número ${numeroAlvo}!`);
           return;
         }
-        // Evita que um risco vertical simples seja aceito para números largos (2, 5, 8)
-        if ([2, 5, 8].includes(numeroAlvo) && larguraUser < alturaUser * 0.35) {
-          reprovarEscrita(`Esse traço ficou muito fino para o número ${numeroAlvo}. Tente novamente!`);
+        if ([2, 5, 8].includes(numeroAlvo) && larguraUser < alturaUser * 0.30) {
+          reprovarComFeedback(`Esse traço ficou muito fino para o número ${numeroAlvo}. Tente novamente!`);
           return;
         }
       }
 
-      const gradeUsuario = rasterizarNormalizado(tracosUsuario, 64);
+      // Grade 64x64 com espessura tolerante (9.5) para absorver variações naturais da mão
+      const gradeUsuario = rasterizarNormalizado(tracosUsuario, 64, 9.5);
 
       let melhorNumero = -1;
       let melhorPontuacao = -1;
-      let segundaMelhor = -1;
       let pontuacaoAlvo = 0;
 
       for (let candidato = 0; candidato <= 10; candidato++) {
         if (ehDoisDigitos !== (candidato === 10)) continue;
 
         const caminhosCand = obterCaminhosEmPixels(candidato, 320, 360);
-        const gradeCand = rasterizarNormalizado(caminhosCand, 64);
+        const gradeCand = rasterizarNormalizado(caminhosCand, 64, 9.5);
         const score = calcularSimilaridadeGrade(gradeUsuario, gradeCand);
 
         if (candidato === numeroAlvo) {
           pontuacaoAlvo = score;
         }
         if (score > melhorPontuacao) {
-          segundaMelhor = melhorPontuacao;
           melhorPontuacao = score;
           melhorNumero = candidato;
-        } else if (score > segundaMelhor) {
-          segundaMelhor = score;
         }
       }
 
-      // Exige alta similaridade (>= 0.64) E que o alvo seja claramente o vencedor
-      const passou = pontuacaoAlvo >= 0.64 && melhorNumero === numeroAlvo && (pontuacaoAlvo - segundaMelhor) >= 0.03;
+      // Aceita se tiver boa semelhança (>= 0.52) E estiver entre os mais próximos do alvo (margem 0.06)
+      const passou = pontuacaoAlvo >= 0.52 && (melhorNumero === numeroAlvo || (melhorPontuacao - pontuacaoAlvo) <= 0.06);
 
       if (passou) {
         avancarDesafio(numeroAlvo);
       } else {
-        reprovarEscrita(`Esse traço não parece o número ${numeroAlvo}. Toque em Apagar e tente novamente!`);
+        reprovarComFeedback(`Esse traço não parece o número ${numeroAlvo}. Toque em Apagar e tente novamente!`);
       }
     }
 
-    function reprovarEscrita(mensagem) {
+    function reprovarComFeedback(mensagem) {
       const lousa = document.querySelector('.lousa-container');
-      lousa.classList.add('erro');
-      setTimeout(() => lousa.classList.remove('erro'), 400);
+      if (lousa) {
+        lousa.classList.add('erro');
+        setTimeout(() => lousa.classList.remove('erro'), 400);
+      }
       Jogo.falar(mensagem);
     }
 
-    function rasterizarNormalizado(listaTracos, tamanhoGrade) {
+    function rasterizarNormalizado(listaTracos, tamanhoGrade, espessuraLinha) {
       const pts = listaTracos.flat();
       let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
       pts.forEach(p => {
@@ -596,7 +597,7 @@ window.Fases[8] = {
 
       const w = Math.max(1, maxX - minX);
       const h = Math.max(1, maxY - minY);
-      const margem = 8;
+      const margem = 10;
       const areaUtil = tamanhoGrade - margem * 2;
       const escala = areaUtil / Math.max(w, h);
 
@@ -608,7 +609,7 @@ window.Fases[8] = {
       c.height = tamanhoGrade;
       const g = c.getContext('2d');
 
-      g.lineWidth = 5.2; // Espessura mais seletiva para diferenciar 2, 5, 6, 8, 9
+      g.lineWidth = espessuraLinha;
       g.lineCap = 'round';
       g.lineJoin = 'round';
       g.strokeStyle = '#000';
@@ -649,7 +650,7 @@ window.Fases[8] = {
     }
 
     // ---------------------------------------------------------
-    // 6. AVANÇA ENTRE NÚMEROS E ETAPAS (COM TRAVA ANTI-DUPLICIDADE)
+    // 6. AVANÇA ENTRE NÚMEROS E ETAPAS
     // ---------------------------------------------------------
     function avancarDesafio(numeroConcluido) {
       if (desafioConcluido) return;
