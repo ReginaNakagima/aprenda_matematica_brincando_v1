@@ -3,7 +3,7 @@
 // 1. Traçados arredondados com Curvas de Bézier
 // 2. Demonstração animada antes de cada número
 // 3. Pontilhado com bloqueio imediato ao sair da trilha
-// 4. Escrita livre calibrada (inclui checagem de ordem 1 -> 0 no 10)
+// 4. Escrita livre com assinatura geométrica + topologia
 // =========================================================
 
 window.Fases[8] = {
@@ -363,7 +363,7 @@ window.Fases[8] = {
 
         const pos = obterPosicao(e);
 
-        if (etapa === 'guiada' && distanciaMinimaParaTrilha(pos) > 34) {
+        if (etapa === 'guiada' && distanciaMinimaParaTrilha(pos) > 38) {
           saiuDaTrilha = true;
           reprovarComFeedback(`Comece em cima do pontilhado do número ${numeroAlvo}! Toque em Apagar.`);
           return;
@@ -382,7 +382,7 @@ window.Fases[8] = {
         e.preventDefault();
         const pos = obterPosicao(e);
 
-        if (etapa === 'guiada' && distanciaMinimaParaTrilha(pos) > 34) {
+        if (etapa === 'guiada' && distanciaMinimaParaTrilha(pos) > 38) {
           desenhando = false;
           saiuDaTrilha = true;
 
@@ -466,7 +466,7 @@ window.Fases[8] = {
       for (const cp of pontosCheckpoints) {
         if (!cp.coberto) {
           const dist = Math.hypot(pos.x - cp.x, pos.y - cp.y);
-          if (dist <= 20) {
+          if (dist <= 22) {
             cp.coberto = true;
           }
         }
@@ -482,6 +482,55 @@ window.Fases[8] = {
       if (percentualCobertura >= 0.95) {
         avancarDesafio(numeroAlvo);
       }
+    }
+
+    // ---------------------------------------------------------
+    // 5. VALIDAÇÃO ESTRUTURAL + VISUAL DA ESCRITA LIVRE
+    // ---------------------------------------------------------
+    function verificarAssinaturaEstrutural(numeroAlvo, todosPontos, minX, maxX, minY, maxY) {
+      const w = Math.max(1, maxX - minX);
+      const h = Math.max(1, maxY - minY);
+
+      // Normaliza cada ponto do usuário para [0..1] dentro da própria caixa do desenho
+      const norm = todosPontos.map(p => ({
+        x: (p.x - minX) / w,
+        y: (p.y - minY) / h
+      }));
+
+      // Divide em 4 quadrantes: SupEsq, SupDir, InfEsq, InfDir
+      const supEsq = norm.filter(p => p.y < 0.45 && p.x < 0.45).length;
+      const supDir = norm.filter(p => p.y < 0.45 && p.x > 0.55).length;
+      const infEsq = norm.filter(p => p.y > 0.55 && p.x < 0.45).length;
+      const infDir = norm.filter(p => p.y > 0.55 && p.x > 0.55).length;
+
+      if (numeroAlvo === 5) {
+        // O 5 tem a haste vertical na metade superior ESQUERDA e NÃO na superior direita (diferente do 3)
+        // Na faixa y entre 0.18 e 0.45, o 5 passa pela esquerda (x < 0.45) e fica vazio à direita (x > 0.60)
+        const faixaSupEsq = norm.filter(p => p.y >= 0.18 && p.y <= 0.44 && p.x < 0.48).length;
+        const faixaSupDir = norm.filter(p => p.y >= 0.18 && p.y <= 0.44 && p.x > 0.62).length;
+        if (faixaSupEsq < 2 || faixaSupDir > faixaSupEsq) {
+          return false;
+        }
+      }
+
+      if (numeroAlvo === 8) {
+        // O 8 precisa fechar os DOIS laços (ter pontos nos 4 quadrantes: SupEsq, SupDir, InfEsq, InfDir)
+        // Um 3 falha aqui porque supEsq e infEsq ficam quase vazios
+        if (supEsq < 3 || supDir < 3 || infEsq < 3 || infDir < 3) {
+          return false;
+        }
+      }
+
+      if (numeroAlvo === 2) {
+        // O 2 tem a cabeça curva no topo direito, desce na diagonal e tem base horizontal embaixo
+        const baseBaixa = norm.filter(p => p.y > 0.82).length;
+        const meioEsq = norm.filter(p => p.y >= 0.35 && p.y <= 0.65 && p.x < 0.35).length;
+        if (baseBaixa < 4 || meioEsq > 3) {
+          return false;
+        }
+      }
+
+      return true;
     }
 
     function validarEscritaLivre(numeroAlvo) {
@@ -507,6 +556,7 @@ window.Fases[8] = {
         return;
       }
 
+      // Validação dedicada para o número 10 (1 à esquerda, 0 à direita)
       if (numeroAlvo === 10) {
         if (tracosUsuario.length < 2 || larguraUser < alturaUser * 0.55) {
           reprovarComFeedback('Lembre-se: o número 10 tem o 1 e o 0 lado a lado!');
@@ -528,18 +578,18 @@ window.Fases[8] = {
           return;
         }
 
-        const gradeEsq = rasterizarNormalizado(tracosEsquerda, 64, 9.5);
-        const gradeDir = rasterizarNormalizado(tracosDireita, 64, 9.5);
+        const gradeEsq = rasterizarNormalizado(tracosEsquerda, 64, 7.5);
+        const gradeDir = rasterizarNormalizado(tracosDireita, 64, 7.5);
 
-        const molde1 = rasterizarNormalizado(obterCaminhosEmPixels(1, 320, 360), 64, 9.5);
-        const molde0 = rasterizarNormalizado(obterCaminhosEmPixels(0, 320, 360), 64, 9.5);
+        const molde1 = rasterizarNormalizado(obterCaminhosEmPixels(1, 320, 360), 64, 7.5);
+        const molde0 = rasterizarNormalizado(obterCaminhosEmPixels(0, 320, 360), 64, 7.5);
 
         const esqEh1 = calcularSimilaridadeGrade(gradeEsq, molde1);
         const esqEh0 = calcularSimilaridadeGrade(gradeEsq, molde0);
         const dirEh0 = calcularSimilaridadeGrade(gradeDir, molde0);
         const dirEh1 = calcularSimilaridadeGrade(gradeDir, molde1);
 
-        const ordemCorreta = esqEh1 >= 0.48 && esqEh1 > esqEh0 && dirEh0 >= 0.55 && dirEh0 > dirEh1;
+        const ordemCorreta = esqEh1 >= 0.45 && esqEh1 > esqEh0 && dirEh0 >= 0.52 && dirEh0 > dirEh1;
 
         if (ordemCorreta) {
           avancarDesafio(10);
@@ -549,6 +599,7 @@ window.Fases[8] = {
         return;
       }
 
+      // Validação para números de 1 dígito (2, 5, 8)
       if (numeroAlvo !== 4 && tracosUsuario.length > 2) {
         reprovarComFeedback(`Tente escrever apenas o número ${numeroAlvo}!`);
         return;
@@ -558,7 +609,14 @@ window.Fases[8] = {
         return;
       }
 
-      const gradeUsuario = rasterizarNormalizado(tracosUsuario, 64, 9.5);
+      // 1º filtro: assinatura estrutural (impede 3 passar por 5 ou 8)
+      if (!verificarAssinaturaEstrutural(numeroAlvo, todosPontos, minX, maxX, minY, maxY)) {
+        reprovarComFeedback(`Esse traço não parece o número ${numeroAlvo}. Toque em Apagar e tente novamente!`);
+        return;
+      }
+
+      // 2º filtro: comparação visual normalizada com espessura 7.2
+      const gradeUsuario = rasterizarNormalizado(tracosUsuario, 64, 7.2);
 
       let melhorNumero = -1;
       let melhorPontuacao = -1;
@@ -566,7 +624,7 @@ window.Fases[8] = {
 
       for (let candidato = 0; candidato <= 9; candidato++) {
         const caminhosCand = obterCaminhosEmPixels(candidato, 320, 360);
-        const gradeCand = rasterizarNormalizado(caminhosCand, 64, 9.5);
+        const gradeCand = rasterizarNormalizado(caminhosCand, 64, 7.2);
         const score = calcularSimilaridadeGrade(gradeUsuario, gradeCand);
 
         if (candidato === numeroAlvo) {
@@ -578,7 +636,7 @@ window.Fases[8] = {
         }
       }
 
-      const passou = pontuacaoAlvo >= 0.52 && (melhorNumero === numeroAlvo || (melhorPontuacao - pontuacaoAlvo) <= 0.05);
+      const passou = pontuacaoAlvo >= 0.50 && (melhorNumero === numeroAlvo || (melhorPontuacao - pontuacaoAlvo) <= 0.03);
 
       if (passou) {
         avancarDesafio(numeroAlvo);
