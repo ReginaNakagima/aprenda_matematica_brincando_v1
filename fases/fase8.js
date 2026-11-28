@@ -525,23 +525,88 @@ window.Fases[8] = {
         return;
       }
 
-      const ehDoisDigitos = String(numeroAlvo).length > 1;
-      if (ehDoisDigitos) {
-        // O 10 exige pelo menos 2 traços (1 e 0) e proporção horizontal
+      // Validação dedicada para o número 10 (1 à esquerda, 0 à direita)
+      if (numeroAlvo === 10) {
         if (tracosUsuario.length < 2 || larguraUser < alturaUser * 0.55) {
-          reprovarComFeedback(`Lembre-se: o número ${numeroAlvo} tem o 1 e o 0 lado a lado!`);
+          reprovarComFeedback('Lembre-se: o número 10 tem o 1 e o 0 lado a lado!');
           return;
         }
-      } else {
-        if (numeroAlvo !== 4 && tracosUsuario.length > 2) {
-          reprovarComFeedback(`Tente escrever apenas o número ${numeroAlvo}!`);
+
+        const meioX = (minX + maxX) / 2;
+        const tracosEsquerda = [];
+        const tracosDireita = [];
+
+        tracosUsuario.forEach(traco => {
+          const mediaX = traco.reduce((acc, p) => acc + p.x, 0) / traco.length;
+          if (mediaX < meioX) tracosEsquerda.push(traco);
+          else tracosDireita.push(traco);
+        });
+
+        if (tracosEsquerda.length === 0 || tracosDireita.length === 0) {
+          reprovarComFeedback('Escreva o número 1 na esquerda e o número 0 na direita!');
           return;
         }
-        if ([2, 5, 8].includes(numeroAlvo) && larguraUser < alturaUser * 0.30) {
-          reprovarComFeedback(`Esse traço ficou muito fino para o número ${numeroAlvo}. Tente novamente!`);
-          return;
+
+        const gradeEsq = rasterizarNormalizado(tracosEsquerda, 64, 9.5);
+        const gradeDir = rasterizarNormalizado(tracosDireita, 64, 9.5);
+
+        const molde1 = rasterizarNormalizado(obterCaminhosEmPixels(1, 320, 360), 64, 9.5);
+        const molde0 = rasterizarNormalizado(obterCaminhosEmPixels(0, 320, 360), 64, 9.5);
+
+        const esqEh1 = calcularSimilaridadeGrade(gradeEsq, molde1);
+        const esqEh0 = calcularSimilaridadeGrade(gradeEsq, molde0);
+        const dirEh0 = calcularSimilaridadeGrade(gradeDir, molde0);
+        const dirEh1 = calcularSimilaridadeGrade(gradeDir, molde1);
+
+        // Garante que à esquerda está o 1 (e não o 0) e à direita está o 0 (e não o 1)
+        const ordemCorreta = esqEh1 >= 0.48 && esqEh1 > esqEh0 && dirEh0 >= 0.55 && dirEh0 > dirEh1;
+
+        if (ordemCorreta) {
+          avancarDesafio(10);
+        } else {
+          reprovarComFeedback('Atenção à ordem! Primeiro o número 1 à esquerda, depois o 0 à direita.');
+        }
+        return;
+      }
+
+      // Validação para números de 1 dígito (2, 5, 8)
+      if (numeroAlvo !== 4 && tracosUsuario.length > 2) {
+        reprovarComFeedback(`Tente escrever apenas o número ${numeroAlvo}!`);
+        return;
+      }
+      if ([2, 5, 8].includes(numeroAlvo) && larguraUser < alturaUser * 0.30) {
+        reprovarComFeedback(`Esse traço ficou muito fino para o número ${numeroAlvo}. Tente novamente!`);
+        return;
+      }
+
+      const gradeUsuario = rasterizarNormalizado(tracosUsuario, 64, 9.5);
+
+      let melhorNumero = -1;
+      let melhorPontuacao = -1;
+      let pontuacaoAlvo = 0;
+
+      for (let candidato = 0; candidato <= 9; candidato++) {
+        const caminhosCand = obterCaminhosEmPixels(candidato, 320, 360);
+        const gradeCand = rasterizarNormalizado(caminhosCand, 64, 9.5);
+        const score = calcularSimilaridadeGrade(gradeUsuario, gradeCand);
+
+        if (candidato === numeroAlvo) {
+          pontuacaoAlvo = score;
+        }
+        if (score > melhorPontuacao) {
+          melhorPontuacao = score;
+          melhorNumero = candidato;
         }
       }
+
+      const passou = pontuacaoAlvo >= 0.52 && (melhorNumero === numeroAlvo || (melhorPontuacao - pontuacaoAlvo) <= 0.05);
+
+      if (passou) {
+        avancarDesafio(numeroAlvo);
+      } else {
+        reprovarComFeedback(`Esse traço não parece o número ${numeroAlvo}. Toque em Apagar e tente novamente!`);
+      }
+    }
 
       // Grade 64x64 com espessura tolerante (9.5) para absorver variações naturais da mão
       const gradeUsuario = rasterizarNormalizado(tracosUsuario, 64, 9.5);
