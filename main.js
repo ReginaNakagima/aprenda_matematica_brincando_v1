@@ -280,7 +280,7 @@ function abrirFase(numeroFase) {
   Jogo.faseAtual = numeroFase;
   Jogo.estado = 'apresentando';
 
-  if (numeroFase >= 1 && numeroFase <= 7) {
+  if (numeroFase >= 1 && numeroFase <= 8) {
     document.body.classList.add('fundo-1ano');
   } else {
     document.body.classList.remove('fundo-1ano');

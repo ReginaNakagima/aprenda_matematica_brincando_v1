@@ -598,4 +598,104 @@ body.fundo-1ano #area-jogo {
   transition: transform 0.15s;
 }
 
+/* --- FASE 8: LOUSA DE ESCRITA DOS NÚMEROS (0 A 10) --- */
+.palco-escrita {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: #FFF;
+  padding: 18px 24px;
+  border-radius: 32px;
+  border: 6px solid #26A69A;
+  box-shadow: 0 10px 0 #00695C;
+  max-width: 94vw;
+}
+
+.coluna-controles-paisagem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.instrucao-escrita {
+  font-size: clamp(1.3rem, 4vw, 2rem);
+  color: #00695C;
+  text-align: center;
+  margin: 0;
+}
+
+.lousa-container {
+  position: relative;
+  width: clamp(250px, 65vw, 340px);
+  height: clamp(270px, 52dvh, 380px);
+  background-color: #FFFDF7;
+  background-image: linear-gradient(to bottom, transparent 49%, #CFD8DC 50%, transparent 51%);
+  border: 5px dashed #80CBC4;
+  border-radius: 24px;
+  overflow: hidden;
+  touch-action: none; /* Impede a tela de rolar enquanto a criança desenha */
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+#canvas-escrita {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair;
+}
+
+.controles-escrita {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-lousa {
+  font-family: inherit;
+  font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+  padding: 10px 22px;
+  border: 4px solid #FFF;
+  border-radius: 22px;
+  color: #FFF;
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+
+.btn-lousa:active {
+  transform: translateY(4px);
+}
+
+.btn-limpar-lousa {
+  background-color: #FF7043;
+  box-shadow: 0 6px 0 #D84315;
+}
+
+.btn-confirmar-lousa {
+  background-color: #66BB6A;
+  box-shadow: 0 6px 0 #2E7D32;
+}
+
+/* Ajuste para celular deitado (paisagem) */
+@media (orientation: landscape) and (max-height: 520px) {
+  .palco-escrita {
+    flex-direction: row;
+    padding: 10px 16px;
+    gap: 16px;
+    max-height: 82dvh;
+  }
+
+  .coluna-controles-paisagem {
+    max-width: 210px;
+    gap: 10px;
+  }
+
+  .lousa-container {
+    width: 230px;
+    height: 68dvh;
+  }
+}
+
 .btn-opcao-num:hover { transform: scale(1.08); }
