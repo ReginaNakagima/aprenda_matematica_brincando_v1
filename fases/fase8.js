@@ -3,7 +3,7 @@
 // 1. Traçados arredondados com Curvas de Bézier
 // 2. Demonstração animada antes de cada número
 // 3. Pontilhado com bloqueio imediato ao sair da trilha
-// 4. Escrita livre calibrada para traço natural de criança/mouse
+// 4. Escrita livre calibrada (inclui checagem de ordem 1 -> 0 no 10)
 // =========================================================
 
 window.Fases[8] = {
@@ -208,9 +208,6 @@ window.Fases[8] = {
       }
     }
 
-    // ---------------------------------------------------------
-    // 1. DESENHA O PONTILHADO ARREDONDADO + CHECKPOINTS
-    // ---------------------------------------------------------
     function desenharMoldePontilhado(numero) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       pontosCheckpoints = [];
@@ -266,9 +263,6 @@ window.Fases[8] = {
       });
     }
 
-    // ---------------------------------------------------------
-    // 2. DEMONSTRAÇÃO ANIMADA DO TRAÇADO
-    // ---------------------------------------------------------
     function executarDemonstracao(numero) {
       if (animacaoId) cancelAnimationFrame(animacaoId);
       demonstrando = true;
@@ -335,9 +329,6 @@ window.Fases[8] = {
       animacaoId = requestAnimationFrame(animarFrame);
     }
 
-    // ---------------------------------------------------------
-    // 3. EVENTOS DE POINTER NO CANVAS + BLOQUEIO IMEDIATO DE RABISCO
-    // ---------------------------------------------------------
     function obterPosicao(evento) {
       const rect = canvas.getBoundingClientRect();
       const escalaX = canvas.width / rect.width;
@@ -372,7 +363,6 @@ window.Fases[8] = {
 
         const pos = obterPosicao(e);
 
-        // Na etapa guiada, se começar fora do pontilhado já alerta na hora
         if (etapa === 'guiada' && distanciaMinimaParaTrilha(pos) > 34) {
           saiuDaTrilha = true;
           reprovarComFeedback(`Comece em cima do pontilhado do número ${numeroAlvo}! Toque em Apagar.`);
@@ -392,7 +382,6 @@ window.Fases[8] = {
         e.preventDefault();
         const pos = obterPosicao(e);
 
-        // Na etapa guiada, bloqueia imediatamente qualquer rabisco fora da trilha
         if (etapa === 'guiada' && distanciaMinimaParaTrilha(pos) > 34) {
           desenhando = false;
           saiuDaTrilha = true;
@@ -472,9 +461,6 @@ window.Fases[8] = {
       }
     }
 
-    // ---------------------------------------------------------
-    // 4. VALIDAÇÃO DO PONTILHADO (100% DENTRO DA TRILHA)
-    // ---------------------------------------------------------
     function marcarCheckpointsProximos(pos) {
       if (etapa !== 'guiada') return;
       for (const cp of pontosCheckpoints) {
@@ -493,15 +479,11 @@ window.Fases[8] = {
       const cobertos = pontosCheckpoints.filter(cp => cp.coberto).length;
       const percentualCobertura = cobertos / pontosCheckpoints.length;
 
-      // Só aprova quando pelo menos 95% de todos os pontos forem cobertos sem sair da trilha
       if (percentualCobertura >= 0.95) {
         avancarDesafio(numeroAlvo);
       }
     }
 
-    // ---------------------------------------------------------
-    // 5. VALIDAÇÃO CALIBRADA DA ESCRITA LIVRE (2, 5, 8, 10)
-    // ---------------------------------------------------------
     function validarEscritaLivre(numeroAlvo) {
       const todosPontos = tracosUsuario.flat();
       if (todosPontos.length < 12) {
@@ -525,7 +507,6 @@ window.Fases[8] = {
         return;
       }
 
-      // Validação dedicada para o número 10 (1 à esquerda, 0 à direita)
       if (numeroAlvo === 10) {
         if (tracosUsuario.length < 2 || larguraUser < alturaUser * 0.55) {
           reprovarComFeedback('Lembre-se: o número 10 tem o 1 e o 0 lado a lado!');
@@ -558,7 +539,6 @@ window.Fases[8] = {
         const dirEh0 = calcularSimilaridadeGrade(gradeDir, molde0);
         const dirEh1 = calcularSimilaridadeGrade(gradeDir, molde1);
 
-        // Garante que à esquerda está o 1 (e não o 0) e à direita está o 0 (e não o 1)
         const ordemCorreta = esqEh1 >= 0.48 && esqEh1 > esqEh0 && dirEh0 >= 0.55 && dirEh0 > dirEh1;
 
         if (ordemCorreta) {
@@ -569,7 +549,6 @@ window.Fases[8] = {
         return;
       }
 
-      // Validação para números de 1 dígito (2, 5, 8)
       if (numeroAlvo !== 4 && tracosUsuario.length > 2) {
         reprovarComFeedback(`Tente escrever apenas o número ${numeroAlvo}!`);
         return;
@@ -600,39 +579,6 @@ window.Fases[8] = {
       }
 
       const passou = pontuacaoAlvo >= 0.52 && (melhorNumero === numeroAlvo || (melhorPontuacao - pontuacaoAlvo) <= 0.05);
-
-      if (passou) {
-        avancarDesafio(numeroAlvo);
-      } else {
-        reprovarComFeedback(`Esse traço não parece o número ${numeroAlvo}. Toque em Apagar e tente novamente!`);
-      }
-    }
-
-      // Grade 64x64 com espessura tolerante (9.5) para absorver variações naturais da mão
-      const gradeUsuario = rasterizarNormalizado(tracosUsuario, 64, 9.5);
-
-      let melhorNumero = -1;
-      let melhorPontuacao = -1;
-      let pontuacaoAlvo = 0;
-
-      for (let candidato = 0; candidato <= 10; candidato++) {
-        if (ehDoisDigitos !== (candidato === 10)) continue;
-
-        const caminhosCand = obterCaminhosEmPixels(candidato, 320, 360);
-        const gradeCand = rasterizarNormalizado(caminhosCand, 64, 9.5);
-        const score = calcularSimilaridadeGrade(gradeUsuario, gradeCand);
-
-        if (candidato === numeroAlvo) {
-          pontuacaoAlvo = score;
-        }
-        if (score > melhorPontuacao) {
-          melhorPontuacao = score;
-          melhorNumero = candidato;
-        }
-      }
-
-      // Aceita se tiver boa semelhança (>= 0.52) E estiver entre os mais próximos do alvo (margem 0.06)
-      const passou = pontuacaoAlvo >= 0.52 && (melhorNumero === numeroAlvo || (melhorPontuacao - pontuacaoAlvo) <= 0.06);
 
       if (passou) {
         avancarDesafio(numeroAlvo);
@@ -714,9 +660,6 @@ window.Fases[8] = {
       return (2 * intersecao) / (totalA + totalB);
     }
 
-    // ---------------------------------------------------------
-    // 6. AVANÇA ENTRE NÚMEROS E ETAPAS
-    // ---------------------------------------------------------
     function avancarDesafio(numeroConcluido) {
       if (desafioConcluido) return;
       desafioConcluido = true;
